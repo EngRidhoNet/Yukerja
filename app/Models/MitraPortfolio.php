@@ -9,6 +9,8 @@ class MitraPortfolio extends Model
 {
     use HasFactory;
 
+    protected $table = "mitra_portfolio";
+
     protected $fillable = [
         'mitra_id',
         'title',
