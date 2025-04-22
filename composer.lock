@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
+    "content-hash": "c690aceafc1e546b6a4a7fb73ccff38e",
+=======
     "content-hash": "68fad49463268d4aa088fd2b6776e7a1",
+>>>>>>> b96bc0741814104676d1e483527fe34d92c764dd
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -3714,6 +3718,18 @@
         },
         {
             "name": "openspout/openspout",
+<<<<<<< HEAD
+            "version": "v4.28.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/openspout/openspout.git",
+                "reference": "ab05a09fe6fce57c90338f83280648a9786ce36b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/openspout/openspout/zipball/ab05a09fe6fce57c90338f83280648a9786ce36b",
+                "reference": "ab05a09fe6fce57c90338f83280648a9786ce36b",
+=======
             "version": "v4.29.1",
             "source": {
                 "type": "git",
@@ -3724,6 +3740,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/openspout/openspout/zipball/ec83106bc3922fe94c9d37976ba6b7259511c4c5",
                 "reference": "ec83106bc3922fe94c9d37976ba6b7259511c4c5",
+>>>>>>> b96bc0741814104676d1e483527fe34d92c764dd
                 "shasum": ""
             },
             "require": {
@@ -3733,6 +3750,19 @@
                 "ext-libxml": "*",
                 "ext-xmlreader": "*",
                 "ext-zip": "*",
+<<<<<<< HEAD
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0"
+            },
+            "require-dev": {
+                "ext-zlib": "*",
+                "friendsofphp/php-cs-fixer": "^3.68.3",
+                "infection/infection": "^0.29.10",
+                "phpbench/phpbench": "^1.4.0",
+                "phpstan/phpstan": "^2.1.2",
+                "phpstan/phpstan-phpunit": "^2.0.4",
+                "phpstan/phpstan-strict-rules": "^2",
+                "phpunit/phpunit": "^11.5.4"
+=======
                 "php": "~8.3.0 || ~8.4.0"
             },
             "require-dev": {
@@ -3744,6 +3774,7 @@
                 "phpstan/phpstan-phpunit": "^2.0.4",
                 "phpstan/phpstan-strict-rules": "^2.0.3",
                 "phpunit/phpunit": "^12.0.7"
+>>>>>>> b96bc0741814104676d1e483527fe34d92c764dd
             },
             "suggest": {
                 "ext-iconv": "To handle non UTF-8 CSV files (if \"php-mbstring\" is not already installed or is too limited)",
@@ -3791,7 +3822,11 @@
             ],
             "support": {
                 "issues": "https://github.com/openspout/openspout/issues",
+<<<<<<< HEAD
+                "source": "https://github.com/openspout/openspout/tree/v4.28.5"
+=======
                 "source": "https://github.com/openspout/openspout/tree/v4.29.1"
+>>>>>>> b96bc0741814104676d1e483527fe34d92c764dd
             },
             "funding": [
                 {
@@ -3803,7 +3838,11 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
+            "time": "2025-01-30T13:51:11+00:00"
+=======
             "time": "2025-03-11T14:40:46+00:00"
+>>>>>>> b96bc0741814104676d1e483527fe34d92c764dd
         },
         {
             "name": "phpoption/phpoption",
@@ -9738,12 +9777,20 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
+<<<<<<< HEAD
+    "stability-flags": [],
+=======
     "stability-flags": {},
+>>>>>>> b96bc0741814104676d1e483527fe34d92c764dd
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
+<<<<<<< HEAD
+    "platform-dev": [],
+=======
     "platform-dev": {},
+>>>>>>> b96bc0741814104676d1e483527fe34d92c764dd
     "plugin-api-version": "2.6.0"
 }
