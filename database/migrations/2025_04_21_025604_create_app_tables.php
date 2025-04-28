@@ -152,7 +152,7 @@ return new class extends Migration
             $table->string('transaction_reference')->nullable();
             $table->timestamps();
         });
-
+        
         // Transaction Logs table
         Schema::create('transaction_logs', function (Blueprint $table) {
             $table->id();
