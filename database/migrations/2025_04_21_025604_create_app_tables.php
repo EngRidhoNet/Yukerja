@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('role')->default('customer'); // customer, mitra, admin
+            $table->enum('role', ['customer', 'mitra', 'admin'])->default('customer');
             $table->string('profile_photo')->nullable();
             $table->string('device_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
@@ -292,57 +292,11 @@ return new class extends Migration
             $table->foreign('reported_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        // Admin Actions table
-        Schema::create('admin_actions', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('admin_id');
-            $table->unsignedBigInteger('target_id');
-            $table->string('target_type');
-            $table->string('action_type');
-            $table->text('notes')->nullable();
-            $table->timestamps();
-            
-            $table->foreign('admin_id')->references('id')->on('users')->onDelete('cascade');
-        });
+       
 
-        // Promotions table
-        Schema::create('promotions', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->decimal('discount_amount', 12, 2)->nullable();
-            $table->float('discount_percentage')->nullable();
-            $table->string('promo_code')->unique();
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->integer('usage_limit')->nullable();
-            $table->integer('used_count')->default(0);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
+       
 
-        // User Promotions table
-        Schema::create('user_promotions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('promotion_id')->constrained()->onDelete('cascade');
-            $table->dateTime('used_at');
-            $table->timestamps();
-            
-            // Create a unique constraint to prevent duplicates
-            $table->unique(['user_id', 'promotion_id']);
-        });
 
-        // Help Center table
-        Schema::create('help_center', function (Blueprint $table) {
-            $table->id();
-            $table->string('category');
-            $table->string('question');
-            $table->text('answer');
-            $table->integer('view_count')->default(0);
-            $table->boolean('is_popular')->default(false);
-            $table->timestamps();
-        });
     }
 
     /**
@@ -352,11 +306,6 @@ return new class extends Migration
      */
     public function down()
     {
-        // Drop tables in reverse order to avoid foreign key constraints
-        Schema::dropIfExists('help_center');
-        Schema::dropIfExists('user_promotions');
-        Schema::dropIfExists('promotions');
-        Schema::dropIfExists('admin_actions');
         Schema::dropIfExists('reports');
         Schema::dropIfExists('wishlists');
         Schema::dropIfExists('favorites');
