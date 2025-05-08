@@ -30,7 +30,7 @@
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 bg-gray-800 px-4">
                 <div class="flex items-center">
-                    {{-- <img src="{{ asset('images/yuk-kerja-logo.png') }}" alt="Logo" class=""> --}}
+                    {{-- <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Logo" class=""> --}}
                     <div class="ml-2 text-white font-bold text-lg">
                         <div>Yuk</div>
                         <div class="-mt-1">Kerja</div>

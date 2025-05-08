@@ -38,7 +38,7 @@
             <div class="flex justify-between h-20">
                 <div class="flex items-center">
                     <a href="#" class="flex-shrink-0 flex items-center">
-                        <img class="h-12 w-auto" src="{{ asset('images/yuk-kerja-logo.png') }}" alt="Yuk Kerja Logo">
+                        <img class="h-12 w-auto" src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Yuk Kerja Logo">
                         {{-- <span class="ml-2 text-2xl font-bold text-blue-900">Yuk Kerja</span> --}}
                     </a>
                 </div>
@@ -87,13 +87,13 @@
                 </div>
                 <div class="md:w-1/2 relative">
                     {{-- <div class="relative z-10">
-                        <img src="{{ asset('images/yuk-kerja-logo.png') }}" alt="Workers" class="rounded-xl shadow-2xl floating">
+                        <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Workers" class="rounded-xl shadow-2xl floating">
                     </div> --}}
                     {{-- <div class="absolute top-1/2 right-0 transform translate-x-1/4 -translate-y-1/2 z-0">
-                        <img src="{{ asset('images/yuk-kerja-logo.png') }}" alt="Service Worker" class="rounded-full border-4 border-white shadow-xl">
+                        <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Service Worker" class="rounded-full border-4 border-white shadow-xl">
                     </div>
                     <div class="absolute bottom-0 left-0 transform -translate-x-1/4 translate-y-1/4 z-20">
-                        <img src="{{ asset('images/yuk-kerja-logo.png') }}" alt="Delivery" class="rounded-full border-4 border-white shadow-xl">
+                        <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Delivery" class="rounded-full border-4 border-white shadow-xl">
                     </div> --}}
                 </div>
             </div>
@@ -352,7 +352,7 @@
                 <!-- Company Info -->
                 <div>
                     <div class="flex items-center mb-6">
-                        <img class="h-10 w-auto" src="{{ asset('images/yuk-kerja-logo.png') }}" alt="Yuk Kerja Logo">
+                        <img class="h-10 w-auto" src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Yuk Kerja Logo">
                         <span class="ml-2 text-xl font-bold">Yuk Kerja</span>
                     </div>
                     <p class="text-blue-200 mb-6">Solusi digital untuk kebutuhan tenaga kerja informal dan UMKM di Indonesia</p>

@@ -271,7 +271,7 @@
   <div class="container">
     <!-- Bagian Kiri (Full Image) -->
     <div class="left" style="padding:0;">
-      {{-- <img src="{{ asset('images/illustration.png.png') }}" alt="Illustration"
+      {{-- <img src="{{ asset('images/illustration.png') }}.png') }}') }}" alt="Illustration"
         style="width:100%;height:100%;object-fit:cover;" /> --}}
     </div>
 

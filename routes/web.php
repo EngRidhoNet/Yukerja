@@ -63,3 +63,7 @@ Route::middleware(['auth', 'role:mitra'])->group(function () {
 Route::get('/mitra/dashboard', [DashboardMitraController::class, 'index'])->name('mitra.dashboard');
 
 
+Route::get('/utama', function () {
+    return view('home');
+})->name('utama');
+

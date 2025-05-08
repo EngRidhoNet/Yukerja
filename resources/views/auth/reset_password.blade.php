@@ -40,7 +40,7 @@
 <body>
   <div class="container">
     <div class="left">
-      <img src="{{asset('images/illustration.png.png')}}" alt="Illustration" />
+      <img src="{{asset('images/illustration.png') }}.png') }}')}}" alt="Illustration" />
     </div>
     
     <div class="right">
@@ -88,7 +88,7 @@
       <div class="success-box">
         <h2>Password Updated!</h2>
         <p>Please wait. You will be directed to the homepage</p>
-        <img src="{{asset('icons/Approval.png')}}" alt="Success"> <!-- Ganti /images/checkmark.png sesuai lokasi icon centang -->
+        <img src="{{asset('{{asset('icons/Approval.png') }}')}}" alt="Success"> <!-- Ganti /images/checkmark.png') }} sesuai lokasi icon centang -->
         <br>
         <button class="btn" onclick="window.location.href='mitra_signin.html'">Return to Login</button>
       </div>

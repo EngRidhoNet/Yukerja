@@ -58,7 +58,7 @@
 <body>
   <div class="container">
     <div class="left">
-      <img src="{{asset('images/illustration.png.png')}}" alt="Illustration" />
+      <img src="{{asset('images/illustration.png') }}.png') }}')}}" alt="Illustration" />
     </div>
     <div class="right">
       <!-- Initial Form (shown by default) -->
@@ -82,7 +82,7 @@
 <div class="form-box" id="emailSentBox" style="display: none;">
   <div style="background-color: #DFF6DD; border-radius: 8px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
     <div style="flex-shrink: 0;">
-      <img src="{{asset('icons/Check Mark.png')}}" alt="Success" style="width: 24px; height: 24px;">
+      <img src="{{asset('{{asset('icons/Check Mark.png') }}')}}" alt="Success" style="width: 24px; height: 24px;">
     </div>
     <p style="margin: 0; color: #2E7D32; font-family: 'Poppins', sans-serif; font-size: 14px;">
       <strong>Email Sent.</strong> Please check your inbox.
@@ -95,7 +95,7 @@
     <p>An email containing instructions to reset<br>
     password has been sent to<br>
     '<span id="userEmail"></span>'</p>
-    <img src="{{asset('icons/Received.png')}}" alt="Success">
+    <img src="{{asset('{{asset('icons/Received.png') }}')}}" alt="Success">
   </div>
 
   <button class="btn" onclick="window.location.href='reset_password.html'">Continue</button>

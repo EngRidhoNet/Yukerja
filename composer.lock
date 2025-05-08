@@ -86,7 +86,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/driesvints/blade-heroicons/zipball/4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19",
+                "url": "https://api.github.com/repos/driesvints/blade-hero{{asset('icons/zipball/4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19",
                 "reference": "4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19",
                 "shasum": ""
             },
@@ -130,8 +130,8 @@
                 "laravel"
             ],
             "support": {
-                "issues": "https://github.com/driesvints/blade-heroicons/issues",
-                "source": "https://github.com/driesvints/blade-heroicons/tree/2.6.0"
+                "issues": "https://github.com/driesvints/blade-hero{{asset('icons/issues",
+                "source": "https://github.com/driesvints/blade-hero{{asset('icons/tree/2.6.0"
             },
             "funding": [
                 {
@@ -155,7 +155,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/driesvints/blade-icons/zipball/7b743f27476acb2ed04cb518213d78abe096e814",
+                "url": "https://api.github.com/repos/driesvints/blade-{{asset('icons/zipball/7b743f27476acb2ed04cb518213d78abe096e814",
                 "reference": "7b743f27476acb2ed04cb518213d78abe096e814",
                 "shasum": ""
             },
@@ -211,7 +211,7 @@
                 "svg"
             ],
             "support": {
-                "issues": "https://github.com/blade-ui-kit/blade-icons/issues",
+                "issues": "https://github.com/blade-ui-kit/blade-{{asset('icons/issues",
                 "source": "https://github.com/blade-ui-kit/blade-icons"
             },
             "funding": [
