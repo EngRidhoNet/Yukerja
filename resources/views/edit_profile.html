@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Homepage Yuk Kerja</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="homepage_style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <i class="fa-solid fa-bars menu-icon" id="menu-toggle"></i>
+  </aside>
+
+  <header class="navbar">
+    <div class="left-menu">
+      <img src="images/Logo Yuk Kerja.png" alt="Logo" class="logo" />
+    </div>
+    <form id="searchForm" action="homepage.html" method="GET" class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" name="q" placeholder="Cari jasa" />
+    </form>
+
+    <div class="right-menu">
+      <img src="icons/notifbell.png" alt="Notifikasi" class="custom-icon" />
+      <span class="notif-badge">4</span>
+      <div class="user-menu-container" onclick="toggleMenu()">
+        <img src="icons/usericon.png" alt="User" class="custom-icon" />
+        <i id="arrowIcon" class="fa-solid fa-chevron-down"></i>
+      
+        <div id="dropdownMenu" class="dropdown hidden">
+          <div class="profile-info">
+            <img src="icons/usericon.png" alt="Profile Picture" class="custom-icon" />
+            <div>
+              <div class="profile-name">user</div>
+              <div class="profile-email">user@gmail.com</div>
+            </div>
+          </div>
+          <button class="edit-button">Edit Profil</button>
+          <div class="menu-item">
+            <img src="icons/favorit.png" alt="Mitra Favorit" class="icon-img" />
+            <span>Mitra Favorit</span>
+          </div>
+          <div class="menu-item">
+            <img src="icons/money.png" alt="Riwayat Transaksi" class="icon-img" />
+            <span>Riwayat Transaksi</span>
+          </div>
+          <div class="menu-item logout">
+            <img src="icons/logout.png" alt="Keluar" class="icon-img" />
+            <span>Keluar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header> 
+
+  <div class="edit-profile-container">
+    <div class="nav-tabs">
+      <span class="active">Profil Pribadi</span>
+      <span>Mitra Favorit</span>
+      <span>Riwayat Transaksi</span>
+    </div>
+
+    <div class="edit-profile-box">
+        <!-- Profile Picture Section -->
+        <div class="profile-section">
+          <div class="profile-picture"></div>
+          <button class="btn-ganti-gambar">Ganti Gambar</button>
+        </div>
+      
+        <div class="form-section"> 
+            <div class="form-group">
+              <label for="username">Username</label>
+              <div class="input-container">
+                <input type="text" id="username" placeholder="Masukkan username" >
+              </div>
+            </div>
+      
+          <div class="form-group">
+            <label for="nama">Nama</label>
+            <div class="input-container">
+              <input type="text" id="nama" placeholder="Masukkan nama Anda">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-container">
+              <input type="email" id="email" placeholder="Masukkan email">
+            </div>
+          </div>
+          
+      
+          <div class="form-group">
+            <label for="password">Kata Sandi</label>
+            <div class="input-container">
+              <input type="password" id="password" placeholder="********">
+              <a class="change-password" href="#">change password</a>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="nohp">No. Hp</label>
+            <div class="input-container">
+              <input type="text" id="nohp" placeholder="08xxxxxxxxxx">
+            </div>
+          </div>
+        
+          <button class="btn-save">Save</button>
+        </div>
+      </div>      
+  </div>
+</body>
+</html>
