@@ -15,7 +15,7 @@
 
   <header class="navbar">
     <div class="left-menu">
-      <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Logo" class="logo" />
+      <img src="{{ asset('images/yuk-kerja-logo.png') }}" alt="Logo" class="logo" />
     </div>
     <form id="searchForm" action="homepage.html" method="GET" class="search-bar">
       <i class="fa-solid fa-magnifying-glass"></i>

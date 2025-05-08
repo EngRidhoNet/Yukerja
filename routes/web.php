@@ -7,6 +7,9 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 
+
+
+// Landing page route
 Route::get('/', function () {
     return view('main');
 })->name('main');
@@ -15,13 +18,13 @@ Route::get('/about', function () {
 })->name('about');
 
 
-// auth customer
 
+
+// auth customer
 Route::get('customer/register', function () {
     return view('auth.customer.register');
 })->name('customer.register');
 Route::post('auth/register/customer', [CustomerAuthController::class, 'register'])->name('auth.customer.register');
-
 // auth mitra
 Route::get('login', function () {
     return view('auth.mitra.login');
@@ -31,7 +34,7 @@ Route::get('mitra/register', function () {
 })->name('mitra.register');
 
 
-// Home page route
+// Dashboard Customer
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
