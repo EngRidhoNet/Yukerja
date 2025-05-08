@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  body {
+    background-color: #fefefe;
+    height: 100vh;
+  }
+  
+  .container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .left {
+    flex: 1;
+    background: #fef6f4;
+    display: flex;
+    justify-content: flex-end; /* dorong gambar ke kanan */
+    align-items: stretch;
+    overflow: hidden;
+  }
+  
+  .left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center; /* posisikan gambar agar lebih fokus ke kiri */
+  }
+  
+  .right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background-color: white;
+  }
+  
+  .form-box {
+    max-width: 400px;
+    width: 100%;
+    margin-right: 270px;
+    margin-bottom: 30px;
+  }
+  
+  .brand {
+    color: #ffc107;
+    font-weight: 700;
+    font-size: 24px;
+  }
+  
+  h2 {
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 24px;
+  }
+  
+  p {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  a {
+    color: #033367;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .input-box {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  
+  .input-box input {
+    width: 100%;
+    padding: 12px 40px 12px 35px;
+    border: none;
+    border-bottom: 2px solid #000;
+    outline: none;
+    font-size: 14px;
+  }
+  
+  .input-box .icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 16px;
+  }
+  
+  .input-box .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+  
+  .forgot-link {
+    color: #263ff5;
+    font-weight: 600;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #0b2e59;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .social-login {
+    text-align: center;
+    margin-top: 25px;
+  }
+  
+  .social-login p {
+    color: #6B7280;
+    margin-bottom: 20px;
+    font-size: 14px;
+    position: relative;
+  }
+  
+  .social-login p::before,
+  .social-login p::after {
+    content: "";
+    position: absolute;
+    height: 1px;
+    width: 30%;
+    background-color: #E5E7EB;
+    top: 50%;
+  }
+  
+  .social-login p::before {
+    left: 0;
+  }
+  
+  .social-login p::after {
+    right: 0;
+  }
+  
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 22px; /* Jarak antar ikon diperlebar */
+  }
+  
+  .social-icon {
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Gunakan font clean */
+    font-weight: bold;
+    font-size: 16px; /* Ukuran lebih kecil */
+    color: #333; /* Warna abu-abu gelap */
+    text-decoration: none;
+    transition: all 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Facebook - huruf "f" kecil */
+  .social-icon.facebook {
+    color: #1877F2;
+    font-size: 35px;
+    margin-top: -1px; /* Penyesuaian posisi */
+  }
+  .social-icon.apple {
+    background-color: #000000;
+    border-radius: 50%; /* Ini yang membuat lingkaran sempurna */
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -3px;
+  }
+  
+  .social-icon.apple i {
+    color: white !important; /* Memaksa warna putih */
+    font-size: 25px;
+  }
+  .social-icon.google i {
+    background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg);
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-size: 32px;
+    color: transparent;
+    margin-top: -1px;
+    
+  }
+  
+  /* Efek hover minimal */
+  .social-icon:hover {
+    opacity: 0.8;
+    
+    .rules-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 10px;
+    }
+    
+    .rules-list li {
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+    
+    .rules-list li i {
+      margin-right: 8px;
+    }
+    
+  }

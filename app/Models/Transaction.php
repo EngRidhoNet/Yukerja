@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = [
         'job_post_id',
         'customer_id',
@@ -38,4 +38,5 @@ class Transaction extends Model
     {
         return $this->belongsTo(Mitra::class);
     }
+    
 }
