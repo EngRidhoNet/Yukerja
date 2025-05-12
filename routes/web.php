@@ -64,8 +64,13 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 Route::middleware(['auth', 'role:mitra'])->group(function () {
 });
 Route::get('/mitra/dashboard', [DashboardMitraController::class, 'index'])->name('mitra.dashboard');
+Route::get('mitra/dashboard/job-terdekat', [DashboardMitraController::class, 'jobTerkait'])->name('mitra.dashboard.job-terkait');
 
 
+
+
+
+// slicing hilmy
 Route::get('/utama', function () {
     return view('home');
 })->name('utama');

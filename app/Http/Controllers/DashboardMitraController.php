@@ -34,5 +34,7 @@ class DashboardMitraController extends Controller
 
         return view('mitra.dashboard', $data);
     }
+
+    
 }
 ?>
