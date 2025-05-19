@@ -33,36 +33,7 @@
 </head>
 <body class="font-sans">
     <!-- Navbar -->
-    <nav class="bg-white shadow-md fixed w-full z-50">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <div class="flex items-center">
-                    <a href="#" class="flex-shrink-0 flex items-center">
-                        <img class="h-12 w-auto" src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Yuk Kerja Logo">
-                        {{-- <span class="ml-2 text-2xl font-bold text-blue-900">Yuk Kerja</span> --}}
-                    </a>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ route('main') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Home</a>
-                    <a href="{{ route('about') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">About</a>
-                    <a href="{{ route('customer.register') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Daftar Customer</a>
-                    <a href="{{ route('login') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Masuk</a>
-                    <a href="{{ route('mitra.register') }}" class="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1">Daftar Mitra</a>
-                </div>
-                
-                <!-- Mobile menu button -->
-                <div class="flex md:hidden items-center">
-                    <button type="button" class="text-gray-600 hover:text-blue-900 focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('layouts.front.navbar')
 
     <!-- Hero Section -->
     <section class="hero-gradient pt-32 pb-20">
@@ -86,15 +57,18 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 relative">
-                    {{-- <div class="relative z-10">
-                        <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Workers" class="rounded-xl shadow-2xl floating">
-                    </div> --}}
-                    {{-- <div class="absolute top-1/2 right-0 transform translate-x-1/4 -translate-y-1/2 z-0">
-                        <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Service Worker" class="rounded-full border-4 border-white shadow-xl">
-                    </div>
-                    <div class="absolute bottom-0 left-0 transform -translate-x-1/4 translate-y-1/4 z-20">
-                        <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="Delivery" class="rounded-full border-4 border-white shadow-xl">
-                    </div> --}}
+                    <!-- Main worker image (team) -->
+                    <div class="relative z-10 overflow-hidden rounded-xl shadow-2xl floating" style="height: 400px;">
+                        <img src="{{ asset('images/workers.jpg') }}" alt="Professional Team" 
+                             class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/30 to-transparent rounded-xl"></div>
+                    </div> 
+                    
+                    
+                    
+                    <!-- Decorative elements -->
+                    <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-yellow-400 rounded-lg z-0 opacity-20"></div>
+                    <div class="absolute -top-4 -left-4 w-16 h-16 bg-blue-900 rounded-full z-0 opacity-20"></div>
                 </div>
             </div>
         </div>

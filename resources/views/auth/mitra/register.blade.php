@@ -12,14 +12,14 @@
   <div class="container">
     <!-- Bagian Kiri -->
     <div class="left">
-      <img src="{{asset('images/illustration.png') }}.png') }}')}}" alt="Illustration" />
+      <img src="{{asset('images/illustration.png') }}" alt="Illustration" />
     </div>
 
     <!-- Bagian Kanan -->
     <div class="right">
       <div class="form-box">
         <h2><span class="brand">Mitra</span> Sign up</h2>
-        <p>If you already have an account register <br> You can <a href="mitra_signin.html">Login here !</a></p>
+        <p>If you already have an account register <br> You can <a href="{{ route('auth.login') }}">Login here !</a></p>
 
         {{-- Show errors --}}
         @if ($errors->any())
@@ -32,14 +32,14 @@
           </div>
         @endif
 
-        <form action="{{ route('mitra.register') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('auth.mitra.register') }}" method="POST" enctype="multipart/form-data">
           @csrf
 
           <!-- Email -->
           <label for="email">Email</label>
           <div class="input-box">
             <span class="icon material-icons">mail</span>
-            <input type="email" name="email" id="email" placeholder="Enter your email address('email') }}" required />" value="{{ old
+            <input type="email" name="email" id="email" placeholder="Enter your email address" value="{{ old('email') }}" required />
           </div>
 
           <!-- Name -->
@@ -61,7 +61,7 @@
           <div class="input-box">
             <span class="icon material-icons">lock</span>
             <input type="password" name="password" id="password" placeholder="Enter your password" required />
-            <span class="toggle-password material-icons hidden" onclick="togglePassword('password', this)">visibility_off</span>
+            <span class="toggle-password material-icons" onclick="togglePassword('password', this)">visibility_off</span>
           </div>
 
           <!-- Confirm Password -->
@@ -69,21 +69,29 @@
           <div class="input-box">
             <span class="icon material-icons">lock</span>
             <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Confirm your password" required />
-            <span class="toggle-password material-icons hidden" onclick="togglePassword('password_confirmation', this)">visibility_off</span>
+            <span class="toggle-password material-icons" onclick="togglePassword('password_confirmation', this)">visibility_off</span>
           </div>
 
-          <!-- File Uploads -->
-          <label for="identity_card_photo">Identity Card Photo</label>
-          <input type="file" name="identity_card_photo" id="identity_card_photo" accept="image/*" required />
+          {{-- <!-- File Uploads -->
+          <div class="file-upload-group">
+            <label for="identity_card_photo">Identity Card Photo</label>
+            <input type="file" name="identity_card_photo" id="identity_card_photo" accept="image/*" required />
+          </div>
 
-          <label for="business_license_photo">Business License Photo</label>
-          <input type="file" name="business_license_photo" id="business_license_photo" accept="image/*" required />
+          <div class="file-upload-group">
+            <label for="business_license_photo">Business License Photo</label>
+            <input type="file" name="business_license_photo" id="business_license_photo" accept="image/*" required />
+          </div>
 
-          <label for="profile_photo">Profile Photo</label>
-          <input type="file" name="profile_photo" id="profile_photo" accept="image/*" />
+          <div class="file-upload-group">
+            <label for="profile_photo">Profile Photo</label>
+            <input type="file" name="profile_photo" id="profile_photo" accept="image/*" />
+          </div>
 
-          <label for="cover_photo">Cover Photo</label>
-          <input type="file" name="cover_photo" id="cover_photo" accept="image/*" />
+          <div class="file-upload-group">
+            <label for="cover_photo">Cover Photo</label>
+            <input type="file" name="cover_photo" id="cover_photo" accept="image/*" />
+          </div> --}}
 
           <!-- Tombol -->
           <button class="btn" type="submit">Register</button>
@@ -99,11 +107,9 @@
       if (passwordField.type === "password") {
         passwordField.type = "text";
         iconElement.textContent = "visibility";
-        iconElement.classList.remove("hidden");
       } else {
         passwordField.type = "password";
         iconElement.textContent = "visibility_off";
-        iconElement.classList.add("hidden");
       }
     }
   </script>

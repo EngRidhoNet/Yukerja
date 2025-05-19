@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\DashboardMitraController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MitraAuthController;
+use App\Models\Mitra;
 use Illuminate\Support\Facades\Route;
 
 
@@ -25,13 +27,13 @@ Route::get('customer/register', function () {
     return view('auth.customer.register');
 })->name('customer.register');
 Route::post('auth/register/customer', [CustomerAuthController::class, 'register'])->name('auth.customer.register');
-// auth mitra
-Route::get('login', function () {
-    return view('auth.mitra.login');
-})->name('login');
+
+
 Route::get('mitra/register', function () {
     return view('auth.mitra.register');
 })->name('mitra.register');
+
+Route::post('auth/register/mitra', [MitraAuthController::class, 'register'])->name('auth.mitra.register');
 
 
 // Dashboard Customer
@@ -46,8 +48,10 @@ Route::get('/layanan-rumah-tangga', [HomeController::class, 'category'])->name('
 Route::get('/pekerjaan-freelance', [HomeController::class, 'category'])->name('category.freelance');
 Route::get('/lain-lain', [HomeController::class, 'category'])->name('category.others');
 
+
 // Service detail page
 Route::get('/service/{id}', [HomeController::class, 'serviceDetail'])->name('service.detail');
+
 
 
 // login
@@ -56,17 +60,42 @@ Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
+
+
+// Route untuk customer
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/dashboard', [HomeController::class, 'index'])->name('customer.dashboard');
     Route::get('/customer/dashboard/category', [HomeController::class, 'category'])->name('customer.dashboard.category');
 });
 
+
+
+// Route untuk mitra
 Route::middleware(['auth', 'role:mitra'])->group(function () {
+    Route::get('/mitra/dashboard', [DashboardMitraController::class, 'index'])->name('mitra.dashboard');
+
+    Route::get('mitra/dashboard/job-terdekat', function () {
+        return view('mitra.job-terdekat');
+    })->name('mitra.dashboard.job-terdekat');
+
+    Route::get('mitra/dashboard/riwayat', function () {
+        return view('mitra.riwayat-pekerjaan');
+    })->name('mitra.dashboard.riwayat');
+
+    Route::get('mitra/dashboard/area', function () {
+        return view('mitra.area');
+    })->name('mitra.dashboard.area');
+
+    Route::get('mitra/dashboard/penawaran', function () {
+        return view('mitra.penawaran');
+    })->name('mitra.dashboard.penawaran');
 });
-Route::get('/mitra/dashboard', [DashboardMitraController::class, 'index'])->name('mitra.dashboard');
 
 
+
+
+
+// slicing hilmy
 Route::get('/utama', function () {
     return view('home');
 })->name('utama');
-
