@@ -32,9 +32,9 @@ class MitraAuthController extends Controller
             'service_category' => $validated['service_category'] ?? null,
             'service_area' => $validated['service_area'] ?? null,
             'identity_card_number' => $validated['identity_card_number'] ?? null,
-            'identity_card_photo' => $uploadFile('identity_card_photo'),
+            'identity_card_photo' => $uploadFile('identity_card_photo') ?? null,
             'business_license_number' => $validated['business_license_number'] ?? null,
-            'business_license_photo' => $uploadFile('business_license_photo'),
+            'business_license_photo' => $uploadFile('business_license_photo') ?? null,
             'profile_photo' => $uploadFile('profile_photo'),
             'cover_photo' => $uploadFile('cover_photo'),
         ]);

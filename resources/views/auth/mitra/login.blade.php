@@ -11,7 +11,7 @@
 <body>
   <div class="container">
     <div class="left">
-      <img src="{{asset('images/illustration.png') }}.png') }}')}}" alt="Illustration" />
+      <img src="{{asset('images/illustration.png') }}" alt="Illustration" />
     </div>
     <div class="right">
       <div class="form-box">

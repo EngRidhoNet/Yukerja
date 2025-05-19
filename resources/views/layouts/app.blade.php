@@ -121,7 +121,7 @@
                 </button>
                 
                 <a class="navbar-brand ms-lg-0 ms-3" href="#">
-                    <img src="{{ asset('images/yuk-kerja-logo.png') }}') }}" alt="YukKerja Logo" onerror="this.src='https://via.placeholder.com/150x40?text=YukKerja'">
+                    <img src="{{ asset('images/yuk-kerja-logo.png') }}" alt="YukKerja Logo">
                 </a>
                 
                 <div class="d-flex flex-grow-1 justify-content-center mx-lg-5 mx-0 position-relative">
@@ -138,7 +138,7 @@
                     </a>
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle text-decoration-none" data-bs-toggle="dropdown">
-                            <img src="{{ asset('images/profile.png') }}') }}" alt="Profile" class="rounded-circle" width="32" height="32" onerror="this.src='https://via.placeholder.com/32?text=P'">
+                            <img src="{{ asset('images/profile.png') }}" alt="Profile" class="rounded-circle" width="32" height="32" onerror="this.src='https://via.placeholder.com/32?text=P'">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="#">Profil</a></li>

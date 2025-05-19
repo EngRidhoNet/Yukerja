@@ -33,35 +33,7 @@
 </head>
 <body class="font-sans">
     <!-- Navbar -->
-    <nav class="bg-white shadow-md fixed w-full z-50">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <div class="flex items-center">
-                    <a href="#" class="flex-shrink-0 flex items-center">
-                        <img class="h-12 w-auto" src="/api/placeholder/120/48" alt="Yuk Kerja Logo">
-                    </a>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ route('main') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Home</a>
-                    <a href="{{ route('about') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">About</a>
-                    <a href="{{ route('customer.register') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Daftar Customer</a>
-                    <a href="{{ route('login') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Masuk</a>
-                    <a href="{{ route('mitra.register') }}" class="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1">Daftar Mitra</a>
-                </div>
-                
-                <!-- Mobile menu button -->
-                <div class="flex md:hidden items-center">
-                    <button type="button" class="text-gray-600 hover:text-blue-900 focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('layouts.front.navbar')
 
     <!-- Page Header -->
     <header class="hero-gradient pt-32 pb-16">
