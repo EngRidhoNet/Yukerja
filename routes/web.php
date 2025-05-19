@@ -81,6 +81,14 @@ Route::middleware(['auth', 'role:mitra'])->group(function () {
     Route::get('mitra/dashboard/riwayat', function () {
         return view('mitra.riwayat-pekerjaan');
     })->name('mitra.dashboard.riwayat');
+
+    Route::get('mitra/dashboard/area', function () {
+        return view('mitra.area');
+    })->name('mitra.dashboard.area');
+
+    Route::get('mitra/dashboard/penawaran', function () {
+        return view('mitra.penawaran');
+    })->name('mitra.dashboard.penawaran');
 });
 
 
