@@ -5,6 +5,7 @@ use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\DashboardMitraController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MitraAuthController;
+use App\Http\Controllers\MitraDashboardController;
 use App\Models\Mitra;
 use Illuminate\Support\Facades\Route;
 
@@ -71,8 +72,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
 
 // Route untuk mitra
-Route::middleware(['auth', 'role:mitra'])->group(function () {
-    Route::get('/mitra/dashboard', [DashboardMitraController::class, 'index'])->name('mitra.dashboard');
+Route::prefix('mitra')->middleware(['auth', 'role:mitra'])->group(function () {
+    Route::get('/dashboard', [MitraDashboardController::class, 'index'])->name('mitra.dashboard');
 
     Route::get('mitra/dashboard/job-terdekat', function () {
         return view('mitra.job-terdekat');
@@ -89,7 +90,16 @@ Route::middleware(['auth', 'role:mitra'])->group(function () {
     Route::get('mitra/dashboard/penawaran', function () {
         return view('mitra.penawaran');
     })->name('mitra.dashboard.penawaran');
+
+    Route::get('mitra/dashboard/edit-profile', function () {
+        return view('mitra.edit-profile');
+    })->name('mitra.dashboard.edit-profile');
+
+    Route::get('mitra/dashboard/pengaturan', function () {
+        return view('mitra.pengaturan');
+    })->name('mitra.dashboard.pengaturan');
 });
+
 
 
 

@@ -252,7 +252,7 @@
                                 <p class="px-4 text-xs text-slate-500">budi@example.com</p>
                             </div>
                             <div class="py-1">
-                                <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Profil Saya</a>
+                                <a href="{{ route('mitra.dashboard.edit-profile') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Profil Saya</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Pengaturan</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Keluar</a>
                             </div>

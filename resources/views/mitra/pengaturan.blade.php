@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pekerjaan Terdekat - Yuk Kerja</title>
-    <meta name="description" content="Pekerjaan Terdekat Yuk Kerja">
+    <title>Pengaturan - Yuk Kerja</title>
+    <meta name="description" content="Pengaturan Mitra Yuk Kerja">
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <!-- Hammer.js for swipe gestures -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         .transition-sidebar {
@@ -25,7 +26,6 @@
         .animate-pulse-slow {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
@@ -40,7 +40,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* Smooth transitions for dropdowns */
         .dropdown-transition {
             transition: all 0.2s ease-in-out;
         }
@@ -51,12 +50,20 @@
         sidebarOpen: true,
         sidebarCollapsed: window.innerWidth < 1280 ? true : false,
         isMobile: window.innerWidth < 1024,
-        toggleSidebar() {
-            if (this.isMobile) {
-                this.sidebarOpen = !this.sidebarOpen;
-            } else {
-                this.sidebarCollapsed = !this.sidebarCollapsed;
-            }
+        showTutorial: !localStorage.getItem('sidebarTutorialShown'),
+        initSwipeGestures() {
+            const mainContent = document.querySelector('#main-content');
+            const hammer = new Hammer(mainContent);
+            hammer.on('swiperight', () => {
+                if (this.isMobile && !this.sidebarOpen) {
+                    this.sidebarOpen = true;
+                }
+            });
+            hammer.on('swipeleft', () => {
+                if (this.isMobile && this.sidebarOpen) {
+                    this.sidebarOpen = false;
+                }
+            });
         },
         setMobileState() {
             this.isMobile = window.innerWidth < 1024;
@@ -65,10 +72,25 @@
             } else {
                 this.sidebarOpen = true;
             }
+        },
+        toggleSidebar() {
+            if (this.isMobile) {
+                this.sidebarOpen = !this.sidebarOpen;
+            } else {
+                this.sidebarCollapsed = !sidebarCollapsed;
+            }
+        },
+        closeTutorial() {
+            this.showTutorial = false;
+            localStorage.setItem('sidebarTutorialShown', true);
         }
     }" x-init="
+        initSwipeGestures(); 
         setMobileState();
         window.addEventListener('resize', () => setMobileState());
+        if(showTutorial) {
+            setTimeout(() => closeTutorial(), 5000);
+        }
     " class="flex h-screen overflow-hidden">
         <!-- Mobile Sidebar Overlay -->
         <div x-show="sidebarOpen && isMobile" @click="sidebarOpen = false"
@@ -96,35 +118,35 @@
                 </div>
             </div>
             <nav class="mt-4 space-y-1">
-                <a href="{{ route('mitra.dashboard') }}" class="flex items-center px-6 py-3  hover:bg-gray-800 transition-colors"
+                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Dashboard Mitra</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.job-terdekat') }}" class="flex items-center bg-blue-700 px-6 py-3 hover:bg-blue-800 transition-colors"
+                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Pekerjaan Terdekat</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.riwayat') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
+                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Riwayat Pekerjaan</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.area') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
+                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Manajemen Area Layanan</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.penawaran') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
+                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -152,8 +174,8 @@
                 </button>
             </div>
         </div>
-        <div id="main-content" class="flex-1 flex flex-col overflow-y-auto bg-gray-100 p-6"
-             x-bind:class="{ 'lg:ml-400': !sidebarCollapsed && !isMobile, 'lg:ml-400': sidebarCollapsed && !isMobile }">
+        <div id="main-content" class="flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out"
+            x-bind:class="{ 'lg:ml-200': !sidebarCollapsed && !isMobile, 'lg:ml-200': sidebarCollapsed && !isMobile }">
             <!-- Top Header -->
             <header class="flex items-center justify-between px-6 py-4 bg-white shadow-sm">
                 <div class="flex items-center">
@@ -162,7 +184,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
-                    <h1 class="text-xl font-semibold text-gray-800 ml-4">Pekerjaan Terdekat</h1>
+                    <h1 class="text-xl font-semibold text-gray-800 ml-4">Pengaturan</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div x-data="{ showNotifications: false }" class="relative">
@@ -173,6 +195,7 @@
                             </svg>
                             <span class="ml-1 bg-yellow-500 rounded-full h-5 w-5 flex items-center justify-center text-white text-xs">4</span>
                         </button>
+                        <!-- Notifications Dropdown -->
                         <div x-show="showNotifications" @click.away="showNotifications = false"
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
@@ -209,6 +232,32 @@
                                         <p class="text-xs text-gray-500 mt-1">2 jam yang lalu</p>
                                     </div>
                                 </a>
+                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-800">Ada pelanggan menunggu respons</p>
+                                        <p class="text-xs text-gray-500 mt-1">5 jam yang lalu</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-800">Pengingat jadwal pekerjaan</p>
+                                        <p class="text-xs text-gray-500 mt-1">Kemarin</p>
+                                    </div>
+                                </a>
                             </div>
                             <div class="p-3 border-t">
                                 <a href="#" class="block text-center text-sm font-medium text-blue-600 hover:text-blue-700">
@@ -229,6 +278,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
+                        <!-- Profile Dropdown -->
                         <div x-show="showProfileMenu" @click.away="showProfileMenu = false"
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
@@ -240,7 +290,7 @@
                                 <p class="px-4 text-xs text-gray-500">budi@example.com</p>
                             </div>
                             <div class="py-1">
-                                <a href="{{ route('mitra.dashboard.edit-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
                             </div>
@@ -250,98 +300,79 @@
             </header>
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto bg-gray-100 p-6">
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
-                    <div class="p-6 border-b border-gray-200">
-                        <h2 class="text-lg font-semibold text-gray-800">Daftar Pekerjaan Terdekat</h2>
-                    </div>
-                    <div class="divide-y divide-gray-200">
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-6">Pengaturan Akun</h2>
+                    <div class="space-y-6">
+                        <!-- Account Details -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-700 mb-4">Detail Akun</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <h3 class="font-medium text-gray-800">Pembersihan Kantor</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Sudirman No. 123, Jakarta Pusat</div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                    <input type="text" value="Budi Santoso" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp350.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 3,2 km</div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" value="budi@example.com" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                                    <input type="text" value="+628123456789" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kata Sandi Baru</label>
+                                    <input type="password" placeholder="Masukkan kata sandi baru" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                                 </div>
                             </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Senin, 20 Mei 2025 • 08:00</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
+                            <div class="mt-6">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Simpan Perubahan</button>
                             </div>
                         </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Perbaikan AC</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Gatot Subroto No. 45, Jakarta Selatan</div>
+                        <!-- Notification Preferences -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-700 mb-4">Preferensi Notifikasi</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notify-jobs" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="notify-jobs" class="ml-2 text-sm text-gray-700">Notifikasi pekerjaan baru</label>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp450.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 5,7 km</div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notify-payments" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="notify-payments" class="ml-2 text-sm text-gray-700">Notifikasi pembayaran</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notify-reminders" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="notify-reminders" class="ml-2 text-sm text-gray-700">Pengingat jadwal pekerjaan</label>
                                 </div>
                             </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Rabu, 21 Mei 2025 • 13:30</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
+                            <div class="mt-6">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Simpan Preferensi</button>
                             </div>
                         </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Pengantaran Paket</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Kemang Raya No. 88, Jakarta Selatan</div>
+                        <!-- Privacy Settings -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-700 mb-4">Pengaturan Privasi</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="public-profile" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="public-profile" class="ml-2 text-sm text-gray-700">Buat profil saya publik</label>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp150.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 8,1 km</div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="share-location" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="share-location" class="ml-2 text-sm text-gray-700">Bagikan lokasi saat bekerja</label>
                                 </div>
                             </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Kamis, 22 Mei 2025 • 09:15</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
+                            <div class="mt-6">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Simpan Pengaturan</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-4 bg-gray-50 border-t border-gray-200 text-center">
-                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Lihat semua pekerjaan (15)</a>
+                        <!-- Data Controls -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-700 mb-4">Kontroll Data</h3>
+                            <div class="space-y-4">
+                                <p class="text-sm text-gray-600">Anda dapat mengelola data Anda dengan mengklik ikon buku di bawah pesan untuk melupakan percakapan tertentu, atau nonaktifkan fitur memori di bagian "Data Controls" di pengaturan.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
