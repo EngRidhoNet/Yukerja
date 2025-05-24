@@ -45,4 +45,9 @@ class JobPost extends Model
     {
         return $this->hasMany(JobApplication::class);
     }
+
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
 }

@@ -2,143 +2,155 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JobPost;
-use App\Models\Notification;
-use App\Models\Report;
-use App\Models\ServiceCategory;
-use App\Models\Transaction;
-use App\Models\TransactionLog;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\JobPost;
+use App\Models\JobApplication;
+use App\Models\Transaction;
+use App\Models\Notification;
+use App\Models\Report;
+use App\Models\Mitra;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use App\Models\ServiceCategory;
 
 class MitraDashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        try {
-            $mitra = Auth::user();
-        
-            $query = JobPost::where('status', 'open')
-                ->whereHas('service_category', function ($q) use ($mitra) {
-                    $q->where('name', $mitra->service_category);
-                });
+        $mitra = Auth::user()->mitra;
+        $user = Auth::user();
 
-            // Apply filters
-            if ($request->category) {
-                $query->where('service_category_id', $request->category);
-            }
-            if ($request->distance) {
-                $query->whereRaw('ST_Distance_Sphere(
-                    POINT(?, ?),
-                    POINT(latitude, longitude)
-                ) / 1000 <= ?', [$mitra->latitude, $mitra->longitude, $request->distance == '10+' ? 999 : $request->distance]);
-            }
+        // Statistics
+        $activeJobs = JobApplication::where('mitra_id', $mitra->id)
+            ->where('status', 'accepted')
+            ->count();
 
-            $pendingJobs = $query->latest()->paginate(10);
-            $activeJobs = JobPost::where('status', 'open')
-                ->orWhereHas('job_applications', function ($q) use ($mitra) {
-                    $q->where('mitra_id', $mitra->id)->where('status', 'accepted');
-                })->count();
-            $activeJobsTrend = $this->calculateTrend(JobPost::class, 'week');
-            $completedJobsTrend = $this->calculateTrend(Transaction::class, 'month', ['mitra_id' => $mitra->id]);
-            $reviewsCount = $mitra->reviews()->count();
-            $violationsCount = Report::where('reported_id', Auth::user()->id)->count();
-            $notifications = Notification::where('user_id', Auth::user()->id)->latest()->get();
-            dd($notifications);
-                
-            $recentActivities = TransactionLog::whereHas('transaction', function ($q) use ($mitra) {
-                $q->where('mitra_id', $mitra->id);
-            })->latest()->take(4)->get()->map(function ($log) {
+        $completedJobs = $mitra->completed_jobs;
+
+        $avgRating = $mitra->avg_rating;
+
+        $violations = Report::where('reported_id', $user->id)
+            ->where('status', 'confirmed')
+            ->count();
+
+        // Pending Jobs
+        $pendingJobs = JobPost::join('job_applications', 'job_posts.id', '=', 'job_applications.job_post_id')
+            ->where('job_applications.mitra_id', $mitra->id)
+            ->where('job_applications.status', 'pending')
+            ->select('job_posts.*', 'job_applications.bid_amount', 'job_applications.estimated_completion_time')
+            ->get();
+
+        // Recent Activities (using notifications)
+        $recentActivities = Notification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        // Notifications
+        $notifications = Notification::where('user_id', $user->id)
+            ->where('is_read', false)
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        // Income Data (last 5 months)
+        $incomeData = Transaction::where('mitra_id', $mitra->id)
+            ->where('payment_status', 'completed')
+            ->where('payment_date', '>=', Carbon::now()->subMonths(5))
+            ->groupBy(DB::raw('YEAR(payment_date), MONTH(payment_date)'))
+            ->selectRaw('YEAR(payment_date) as year, MONTH(payment_date) as month, SUM(mitra_earning) as total')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get()
+            ->map(function ($item) {
                 return [
-                    'description' => $log->description,
-                    'created_at' => $log->created_at,
-                    'type_color' => $this->getActivityColor($log->status),
-                    'icon_path' => $this->getActivityIcon($log->status),
+                    'month' => Carbon::create($item->year, $item->month)->format('M'),
+                    'total' => $item->total
                 ];
             });
-            $incomeChart = $this->getIncomeChartData($mitra->id);
-            $categories = ServiceCategory::where('is_active', true)->get();
 
-            return view('mitra.dashboard', compact(
-                'pendingJobs',
-                'activeJobs',
-                'activeJobsTrend',
-                'completedJobsTrend',
-                'reviewsCount',
-                'violationsCount',
-                'notifications',
-                'recentActivities',
-                'incomeChart',
-                'categories'
-            ));
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error in MitraDashboardController::index: ' . $e->getMessage());
-            return redirect()->route('home')->with('error', 'An error occurred while loading the dashboard.');
+        return view('mitra.dashboard', compact(
+            'user',
+            'mitra',
+            'activeJobs',
+            'completedJobs',
+            'avgRating',
+            'violations',
+            'pendingJobs',
+            'recentActivities',
+            'notifications',
+            'incomeData'
+        ));
+    }
+
+    public function nearbyJobs(Request $request)
+    {
+        $mitra = Auth::user()->mitra;
+        $user = Auth::user();
+
+        // Fetch notifications
+        $notifications = Notification::where('user_id', $user->id)
+            ->where('is_read', false)
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        // Fetch service categories for filter
+        $categories = ServiceCategory::where('is_active', true)->get();
+
+        // Build query for nearby jobs
+        $query = JobPost::where('status', 'open')
+            ->whereNotIn('id', function ($query) use ($mitra) {
+                $query->select('job_post_id')
+                    ->from('job_applications')
+                    ->where('mitra_id', $mitra->id);
+            })
+            ->select('job_posts.*')
+            ->selectRaw(
+                '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance',
+                [$mitra->latitude, $mitra->longitude, $mitra->latitude]
+            )
+            ->having('distance', '<', 20); // Jobs within 20 km
+
+        // Apply filters
+        if ($request->filled('category')) {
+            $query->where('service_category_id', $request->category);
         }
-    }
 
-    private function calculateTrend($model, $period, $conditions = [])
-    {
-        $current = $model::where($conditions)->whereBetween('created_at', [
-            now()->startOf($period),
-            now()->endOf($period)
-        ])->count();
-
-        $previous = $model::where($conditions)->whereBetween('created_at', [
-            now()->sub($period)->startOf($period),
-            now()->sub($period)->endOf($period)
-        ])->count();
-
-        return $previous > 0 ? round(($current - $previous) / $previous * 100, 1) : 0;
-    }
-
-    private function getIncomeChartData($mitraId)
-    {
-        $data = [];
-        $labels = [];
-        for ($i = 4; $i >= 0; $i--) {
-            $month = now()->subMonths($i);
-            $labels[] = $month->format('M');
-            $data[] = Transaction::where('mitra_id', $mitraId)
-                ->where('payment_status', 'completed')
-                ->whereMonth('payment_date', $month->month)
-                ->whereYear('payment_date', $month->year)
-                ->sum('mitra_earning');
+        if ($request->filled('distance')) {
+            $query->having('distance', '<=', $request->distance);
         }
-        return ['labels' => $labels, 'data' => $data];
-    }
 
-    private function getActivityColor($status)
-    {
-        return match ($status) {
-            'completed' => 'green',
-            'pending' => 'yellow',
-            'failed' => 'red',
-            default => 'blue',
-        };
-    }
+        if ($request->filled('budget_min')) {
+            $query->where('budget', '>=', $request->budget_min);
+        }
 
-    private function getActivityIcon($status)
-    {
-        return match ($status) {
-            'completed' => 'M9 12l2 2 4-4m6 0a9 9 0 11-18 0 9 9 0 0118 0z',
-            'pending' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-            'failed' => 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
-            default => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
-        };
-    }
+        if ($request->filled('budget_max')) {
+            $query->where('budget', '<=', $request->budget_max);
+        }
 
-    // Placeholder methods for other routes
-    public function nearbyJobs() { /* Implement logic */ }
-    public function history() { /* Implement logic */ }
-    public function serviceArea() { /* Implement logic */ }
-    public function offers() { /* Implement logic */ }
-    public function editProfile() { /* Implement logic */ }
-    public function settings() { /* Implement logic */ }
-    public function notifications() { /* Implement logic */ }
-    public function activities() { /* Implement logic */ }
-    public function reports() { /* Implement logic */ }
-    public function jobDetail($id) { /* Implement logic */ }
-    public function acceptJob($id) { /* Implement logic to create job_application */ }
+        // Apply sorting
+        $sort = $request->input('sort', 'distance');
+        $direction = $request->input('direction', 'asc');
+
+        if ($sort === 'budget') {
+            $query->orderBy('budget', $direction);
+        } elseif ($sort === 'date') {
+            $query->orderBy('scheduled_date', $direction);
+        } else {
+            $query->orderBy('distance', $direction);
+        }
+
+        // Paginate results
+        $jobs = $query->paginate(10);
+
+        return view('mitra.job-terdekat', compact(
+            'user',
+            'mitra',
+            'jobs',
+            'categories',
+            'notifications'
+        ));
+    }
 }
