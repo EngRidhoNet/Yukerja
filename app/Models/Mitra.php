@@ -28,6 +28,9 @@ class Mitra extends Model
         'completed_jobs',
     ];
 
+    protected $casts = [
+        'service_area' => 'array', // Cast JSON to array
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);

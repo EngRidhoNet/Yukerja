@@ -9,7 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <!-- Hammer.js for swipe gestures -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         .transition-sidebar {
@@ -25,7 +26,6 @@
         .animate-pulse-slow {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
@@ -40,7 +40,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* Smooth transitions for dropdowns */
         .dropdown-transition {
             transition: all 0.2s ease-in-out;
         }
@@ -51,12 +50,20 @@
         sidebarOpen: true,
         sidebarCollapsed: window.innerWidth < 1280 ? true : false,
         isMobile: window.innerWidth < 1024,
-        toggleSidebar() {
-            if (this.isMobile) {
-                this.sidebarOpen = !this.sidebarOpen;
-            } else {
-                this.sidebarCollapsed = !this.sidebarCollapsed;
-            }
+        showTutorial: !localStorage.getItem('sidebarTutorialShown'),
+        initSwipeGestures() {
+            const mainContent = document.querySelector('#main-content');
+            const hammer = new Hammer(mainContent);
+            hammer.on('swiperight', () => {
+                if (this.isMobile && !this.sidebarOpen) {
+                    this.sidebarOpen = true;
+                }
+            });
+            hammer.on('swipeleft', () => {
+                if (this.isMobile && this.sidebarOpen) {
+                    this.sidebarOpen = false;
+                }
+            });
         },
         setMobileState() {
             this.isMobile = window.innerWidth < 1024;
@@ -65,10 +72,25 @@
             } else {
                 this.sidebarOpen = true;
             }
+        },
+        toggleSidebar() {
+            if (this.isMobile) {
+                this.sidebarOpen = !this.sidebarOpen;
+            } else {
+                this.sidebarCollapsed = !this.sidebarCollapsed;
+            }
+        },
+        closeTutorial() {
+            this.showTutorial = false;
+            localStorage.setItem('sidebarTutorialShown', true);
         }
     }" x-init="
+        initSwipeGestures(); 
         setMobileState();
         window.addEventListener('resize', () => setMobileState());
+        if(showTutorial) {
+            setTimeout(() => closeTutorial(), 5000);
+        }
     " class="flex h-screen overflow-hidden">
         <!-- Mobile Sidebar Overlay -->
         <div x-show="sidebarOpen && isMobile" @click="sidebarOpen = false"
@@ -83,7 +105,6 @@
             'sidebar-collapsed': sidebarCollapsed && !isMobile,
             'sidebar-expanded': !sidebarCollapsed && !isMobile
         }" class="fixed inset-y-0 left-0 z-30 transform transition-sidebar bg-gray-900 text-white lg:relative lg:translate-x-0">
-            <!-- Logo -->
             <div class="flex items-center justify-center h-16 bg-gray-900 px-4">
                 <div class="flex items-center">
                     <div class="font-bold tracking-tight"
@@ -96,7 +117,7 @@
                 </div>
             </div>
             <nav class="mt-4 space-y-1">
-                <a href="{{ route('mitra.dashboard') }}" class="flex items-center px-6 py-3  hover:bg-gray-800 transition-colors"
+                <a href="{{ route('mitra.dashboard') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -124,14 +145,8 @@
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Manajemen Area Layanan</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.penawaran') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
-                    x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
-                    <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Penawaran Masuk</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
+
+                <a href="{{ route('logout') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -139,7 +154,6 @@
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Keluar</span>
                 </a>
             </nav>
-            <!-- Collapse Toggle Button -->
             <div class="absolute bottom-0 left-0 right-0 p-4 hidden lg:block">
                 <button @click="sidebarCollapsed = !sidebarCollapsed"
                     class="w-full flex items-center justify-center p-2 rounded bg-gray-800 hover:bg-gray-700 transition-colors">
@@ -152,8 +166,8 @@
                 </button>
             </div>
         </div>
-        <div id="main-content" class="flex-1 flex flex-col overflow-y-auto bg-gray-100 p-6"
-             x-bind:class="{ 'lg:ml-400': !sidebarCollapsed && !isMobile, 'lg:ml-400': sidebarCollapsed && !isMobile }">
+        <div id="main-content" class="flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out"
+            x-bind:class="{ 'lg:ml-200': !sidebarCollapsed && !isMobile, 'lg:ml-200': sidebarCollapsed && !isMobile }">
             <!-- Top Header -->
             <header class="flex items-center justify-between px-6 py-4 bg-white shadow-sm">
                 <div class="flex items-center">
@@ -171,7 +185,7 @@
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
-                            <span class="ml-1 bg-yellow-500 rounded-full h-5 w-5 flex items-center justify-center text-white text-xs">4</span>
+                            <span class="ml-1 bg-yellow-500 rounded-full h-5 w-5 flex items-center justify-center text-white text-xs">{{ $notifications->count() }}</span>
                         </button>
                         <div x-show="showNotifications" @click.away="showNotifications = false"
                             x-transition:enter="transition ease-out duration-200"
@@ -183,32 +197,21 @@
                                 <h3 class="text-sm font-semibold text-gray-800">Notifikasi</h3>
                             </div>
                             <div class="max-h-64 overflow-y-auto">
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                @foreach($notifications as $notification)
+                                    <a href="{{ $notification->redirect_url ?? '#' }}" class="flex px-4 py-3 hover:bg-gray-50 border-b">
+                                        <div class="flex-shrink-0">
+                                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pekerjaan baru tersedia</p>
-                                        <p class="text-xs text-gray-500 mt-1">10 menit yang lalu</p>
-                                    </div>
-                                </a>
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-800">{{ $notification->title }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
                                         </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pembayaran diterima</p>
-                                        <p class="text-xs text-gray-500 mt-1">2 jam yang lalu</p>
-                                    </div>
-                                </a>
+                                    </a>
+                                @endforeach
                             </div>
                             <div class="p-3 border-t">
                                 <a href="#" class="block text-center text-sm font-medium text-blue-600 hover:text-blue-700">
@@ -221,9 +224,13 @@
                         <button @click="showProfileMenu = !showProfileMenu" aria-label="Profile Menu"
                             class="flex items-center focus:outline-none">
                             <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
+                                @if($mitra->profile_photo)
+                                    <img src="{{ asset('storage/' . $mitra->profile_photo) }}" alt="Profile" class="h-8 w-8 rounded-full">
+                                @else
+                                    <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                @endif
                             </div>
                             <svg class="h-4 w-4 ml-1 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -236,13 +243,13 @@
                             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                             class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 dropdown-transition" x-cloak>
                             <div class="py-2 border-b">
-                                <p class="px-4 text-sm font-medium text-gray-800">Budi Santoso</p>
-                                <p class="px-4 text-xs text-gray-500">budi@example.com</p>
+                                <p class="px-4 text-sm font-medium text-gray-800">{{ $user->name }}</p>
+                                <p class="px-4 text-xs text-gray-500">{{ $user->email }}</p>
                             </div>
                             <div class="py-1">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
+                                <a href="{{ route('mitra.dashboard.edit-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
+                                <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
                             </div>
                         </div>
                     </div>
@@ -251,97 +258,146 @@
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto bg-gray-100 p-6">
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
-                    <div class="p-6 border-b border-gray-200">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
                         <h2 class="text-lg font-semibold text-gray-800">Daftar Pekerjaan Terdekat</h2>
+                        <div x-data="{ showFilter: false }" class="relative">
+                            <button @click="showFilter = !showFilter" aria-label="Filter Jobs"
+                                class="flex items-center text-sm text-gray-600 hover:text-gray-800">
+                                <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                </svg>
+                                Filter
+                            </button>
+                            <div x-show="showFilter" @click.away="showFilter = false"
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 dropdown-transition" x-cloak>
+                                <form method="GET" action="{{ route('mitra.dashboard.job-terdekat') }}">
+                                    <div class="p-4">
+                                        <h3 class="text-sm font-semibold text-gray-800 mb-3">Filter Pekerjaan</h3>
+                                        <div class="mb-4">
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Kategori</label>
+                                            <select name="category" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="">Semua</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Jarak</label>
+                                            <select name="distance" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="">Semua</option>
+                                                <option value="5" {{ request('distance') == '5' ? 'selected' : '' }}>< 5 km</option>
+                                                <option value="10" {{ request('distance') == '10' ? 'selected' : '' }}>< 10 km</option>
+                                                <option value="20" {{ request('distance') == '20' ? 'selected' : '' }}>< 20 km</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Budget</label>
+                                            <div class="flex space-x-2">
+                                                <input type="number" name="budget_min" placeholder="Min" value="{{ request('budget_min') }}"
+                                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                                <input type="number" name="budget_max" placeholder="Max" value="{{ request('budget_max') }}"
+                                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end space-x-2">
+                                            <a href="{{ route('mitra.dashboard.job-terdekat') }}" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800">Reset</a>
+                                            <button type="submit" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                                Terapkan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+                    <!-- Sorting Controls -->
+                    <div class="px-6 py-3 bg-gray-50 flex justify-end space-x-4 text-sm text-gray-600">
+                        <div>
+                            Urutkan:
+                            <a href="{{ route('mitra.dashboard.job-terdekat', array_merge(request()->query(), ['sort' => 'distance', 'direction' => request('sort') == 'distance' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}"
+                                class="ml-2 {{ request('sort', 'distance') == 'distance' ? 'font-semibold text-blue-600' : 'hover:text-blue-600' }}">
+                                Jarak {{ request('sort') == 'distance' ? (request('direction') == 'asc' ? '↑' : '↓') : '' }}
+                            </a>
+                            <a href="{{ route('mitra.dashboard.job-terdekat', array_merge(request()->query(), ['sort' => 'budget', 'direction' => request('sort') == 'budget' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}"
+                                class="ml-2 {{ request('sort') == 'budget' ? 'font-semibold text-blue-600' : 'hover:text-blue-600' }}">
+                                Budget {{ request('sort') == 'budget' ? (request('direction') == 'asc' ? '↑' : '↓') : '' }}
+                            </a>
+                            <a href="{{ route('mitra.dashboard.job-terdekat', array_merge(request()->query(), ['sort' => 'date', 'direction' => request('sort') == 'date' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}"
+                                class="ml-2 {{ request('sort') == 'date' ? 'font-semibold text-blue-600' : 'hover:text-blue-600' }}">
+                                Tanggal {{ request('sort') == 'date' ? (request('direction') == 'asc' ? '↑' : '↓') : '' }}
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Jobs List -->
                     <div class="divide-y divide-gray-200">
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Pembersihan Kantor</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Sudirman No. 123, Jakarta Pusat</div>
+                        @forelse($jobs as $job)
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800">{{ $job->title }}</h3>
+                                        <div class="text-sm text-gray-500 mt-1">{{ $job->address }}</div>
+                                        <div class="text-xs text-gray-400 mt-1">{{ $job->serviceCategory->name }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm font-medium text-gray-800">Rp{{ number_format($job->budget, 0, ',', '.') }}</div>
+                                        <div class="text-xs text-gray-500 mt-1">Jarak: {{ number_format($job->distance, 1) }} km</div>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp350.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 3,2 km</div>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Senin, 20 Mei 2025 • 08:00</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Perbaikan AC</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Gatot Subroto No. 45, Jakarta Selatan</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp450.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 5,7 km</div>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{{ \Carbon\Carbon::parse($job->scheduled_date)->translatedFormat('l, d M Y • H:i') }}</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <a href="{{ route('mitra.job.detail', $job->id) }}" class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                            Lihat Detail
+                                        </a>
+                                        <form action="{{ route('mitra.job.apply', $job->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
+                                                Lamar
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Rabu, 21 Mei 2025 • 13:30</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
+                        @empty
+                            <div class="p-6 text-center text-gray-500">
+                                Tidak ada pekerjaan terdekat yang tersedia.
                             </div>
-                        </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Pengantaran Paket</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Kemang Raya No. 88, Jakarta Selatan</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp150.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 8,1 km</div>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Kamis, 22 Mei 2025 • 09:15</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
-                    <div class="p-4 bg-gray-50 border-t border-gray-200 text-center">
-                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Lihat semua pekerjaan (15)</a>
+                    <!-- Pagination -->
+                    <div class="p-4 bg-gray-50 border-t border-gray-200">
+                        {{ $jobs->appends(request()->query())->links('vendor.pagination.tailwind') }}
+                    </div>
+                </div>
+                <!-- Sidebar Tutorial Overlay -->
+                <div x-show="showTutorial" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" x-cloak>
+                    <div class="bg-white rounded-xl shadow-xl p-8 max-w-md">
+                        <div class="text-center mb-6">
+                            <svg class="h-12 w-12 text-blue-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="text-xl font-bold text-gray-800 mt-3">Selamat Datang di Pekerjaan Terdekat!</h3>
+                            <p class="text-gray-600 mt-2 text-sm">Gunakan tombol di pojok kiri atas untuk memperluas atau meminimalkan sidebar navigasi sesuai kebutuhan Anda.</p>
+                        </div>
+                        <div class="flex justify-center">
+                            <button @click="closeTutorial()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                Mengerti
+                            </button>
+                        </div>
                     </div>
                 </div>
             </main>

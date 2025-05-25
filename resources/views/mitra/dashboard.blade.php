@@ -28,7 +28,6 @@
         .animate-pulse-slow {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
@@ -43,7 +42,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* Smooth transitions for dropdowns */
         .dropdown-transition {
             transition: all 0.2s ease-in-out;
         }
@@ -150,14 +148,8 @@
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Manajemen Area Layanan</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.penawaran') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
-                    x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
-                    <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Penawaran Masuk</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
+
+                <a href="{{ route('logout') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -197,7 +189,7 @@
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
-                            <span class="ml-1 bg-yellow-500 rounded-full h-5 w-5 flex items-center justify-center text-white text-xs">4</span>
+                            <span class="ml-1 bg-yellow-500 rounded-full h-5 w-5 flex items-center justify-center text-white text-xs">{{ $notifications->count() }}</span>
                         </button>
                         <!-- Notifications Dropdown -->
                         <div x-show="showNotifications" @click.away="showNotifications = false"
@@ -210,58 +202,21 @@
                                 <h3 class="text-sm font-semibold text-gray-800">Notifikasi</h3>
                             </div>
                             <div class="max-h-64 overflow-y-auto">
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                @foreach($notifications as $notification)
+                                    <a href="{{ $notification->redirect_url ?? '#' }}" class="flex px-4 py-3 hover:bg-gray-50 border-b">
+                                        <div class="flex-shrink-0">
+                                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pekerjaan baru tersedia</p>
-                                        <p class="text-xs text-gray-500 mt-1">10 menit yang lalu</p>
-                                    </div>
-                                </a>
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-800">{{ $notification->title }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
                                         </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pembayaran diterima</p>
-                                        <p class="text-xs text-gray-500 mt-1">2 jam yang lalu</p>
-                                    </div>
-                                </a>
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Ada pelanggan menunggu respons</p>
-                                        <p class="text-xs text-gray-500 mt-1">5 jam yang lalu</p>
-                                    </div>
-                                </a>
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pengingat jadwal pekerjaan</p>
-                                        <p class="text-xs text-gray-500 mt-1">Kemarin</p>
-                                    </div>
-                                </a>
+                                    </a>
+                                @endforeach
                             </div>
                             <div class="p-3 border-t">
                                 <a href="#" class="block text-center text-sm font-medium text-blue-600 hover:text-blue-700">
@@ -274,9 +229,13 @@
                         <button @click="showProfileMenu = !showProfileMenu" aria-label="Profile Menu"
                             class="flex items-center focus:outline-none">
                             <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
+                                @if($mitra->profile_photo)
+                                    <img src="{{ asset('storage/' . $mitra->profile_photo) }}" alt="Profile" class="h-8 w-8 rounded-full">
+                                @else
+                                    <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                @endif
                             </div>
                             <svg class="h-4 w-4 ml-1 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -290,13 +249,13 @@
                             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                             class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 dropdown-transition" x-cloak>
                             <div class="py-2 border-b">
-                                <p class="px-4 text-sm font-medium text-gray-800">Budi Santoso</p>
-                                <p class="px-4 text-xs text-gray-500">budi@example.com</p>
+                                <p class="px-4 text-sm font-medium text-gray-800">{{ $user->name }}</p>
+                                <p class="px-4 text-xs text-gray-500">{{ $user->email }}</p>
                             </div>
                             <div class="py-1">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
+                                <a href="{{ route('mitra.dashboard.edit-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
+                                <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
                             </div>
                         </div>
                     </div>
@@ -307,7 +266,7 @@
                 <!-- Stats Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                        <div class="text-3xl font-bold text-gray-800">8</div>
+                        <div class="text-3xl font-bold text-gray-800">{{ $activeJobs }}</div>
                         <div class="text-sm font-medium text-gray-600">Pekerjaan Aktif</div>
                         <div class="mt-3 flex items-center text-xs text-green-600">
                             <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -317,7 +276,7 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                        <div class="text-3xl font-bold text-gray-800">24</div>
+                        <div class="text-3xl font-bold text-gray-800">{{ $completedJobs }}</div>
                         <div class="text-sm font-medium text-gray-600">Pekerjaan Selesai</div>
                         <div class="mt-3 flex items-center text-xs text-green-600">
                             <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -328,26 +287,26 @@
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
                         <div class="flex items-center">
-                            <div class="text-3xl font-bold text-gray-800">4,8</div>
+                            <div class="text-3xl font-bold text-gray-800">{{ number_format($avgRating, 1) }}</div>
                             <svg class="h-6 w-6 text-yellow-400 ml-2" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                             </svg>
                         </div>
                         <div class="text-sm font-medium text-gray-600">Statistik Rating</div>
                         <div class="mt-3 text-xs text-gray-500">
-                            <span>Dari 42 ulasan pelanggan</span>
+                            <span>Dari {{ \App\Models\Review::where('mitra_id', $mitra->id)->count() }} ulasan pelanggan</span>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
                         <div class="flex items-center text-red-600">
-                            <div class="text-3xl font-bold">0</div>
+                            <div class="text-3xl font-bold">{{ $violations }}</div>
                             <svg class="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
                         <div class="text-sm font-medium text-gray-600">Jumlah Pelanggaran</div>
                         <div class="mt-3 text-xs text-green-600">
-                            <span>Status akun: Sangat Baik</span>
+                            <span>Status akun: {{ $violations == 0 ? 'Sangat Baik' : 'Perlu Perhatian' }}</span>
                         </div>
                     </div>
                 </div>
@@ -376,18 +335,18 @@
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Pekerjaan</label>
                                         <select class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                                             <option>Semua</option>
-                                            <option>Pembersihan</option>
-                                            <option>Perbaikan</option>
-                                            <option>Pengantaran</option>
+                                            @foreach(\App\Models\ServiceCategory::where('is_active', true)->get() as $category)
+                                                <option>{{ $category->name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="mb-4">
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Jarak</label>
                                         <select class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                                             <option>Semua</option>
-                                            <option>&lt; 5 km</option>
+                                            <option>< 5 km</option>
                                             <option>5 - 10 km</option>
-                                            <option>&gt; 10 km</option>
+                                            <option>> 10 km</option>
                                         </select>
                                     </div>
                                     <div class="flex justify-end">
@@ -401,93 +360,42 @@
                     </div>
                     <!-- Jobs List -->
                     <div class="divide-y divide-gray-200">
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Pembersihan Kantor</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Sudirman No. 123, Jakarta Pusat</div>
+                        @foreach($pendingJobs as $job)
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800">{{ $job->title }}</h3>
+                                        <div class="text-sm text-gray-500 mt-1">{{ $job->address }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm font-medium text-gray-800">Rp{{ number_format($job->bid_amount, 0, ',', '.') }}</div>
+                                        <div class="text-xs text-gray-500 mt-1">Jarak: {{ round(\App\Helpers\DistanceHelper::calculateDistance($mitra->latitude, $mitra->longitude, $job->latitude, $job->longitude), 1) }} km</div>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp350.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 3,2 km</div>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Senin, 21 Mei 2025 • 08:00</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Perbaikan AC</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Gatot Subroto No. 45, Jakarta Selatan</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp450.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 5,7 km</div>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{{ \Carbon\Carbon::parse($job->scheduled_date)->translatedFormat('l, d M Y • H:i') }}</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <a href="{{ route('mitra.job.detail', $job->id) }}" class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                            Lihat Detail
+                                        </a>
+                                        <form action="{{ route('mitra.job.accept', $job->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
+                                                Terima
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Rabu, 23 Mei 2025 • 13:30</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Pengantaran Paket</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Kemang Raya No. 88, Jakarta Selatan</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp150.000</div>
-                                    <div class="text-xs text-gray-500 mt-1">Jarak: 8,1 km</div>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Kamis, 24 Mei 2025 • 09:15</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                    <button class="px-3 py-1 text-xs border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors">
-                                        Terima
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                     <div class="p-4 bg-gray-50 border-t border-gray-200 text-center">
-                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Lihat semua pekerjaan (12)</a>
+                        <a href="{{ route('mitra.dashboard.penawaran') }}" class="text-sm text-blue-600 hover:text-blue-700">Lihat semua pekerjaan ({{ $pendingJobs->count() }})</a>
                     </div>
                 </div>
                 <!-- Recent Activities & Income Chart Section -->
@@ -498,50 +406,19 @@
                             <h2 class="text-lg font-semibold text-gray-800">Aktivitas Terbaru</h2>
                         </div>
                         <div class="divide-y divide-gray-200">
-                            <div class="p-5 flex">
-                                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
+                            @foreach($recentActivities as $activity)
+                                <div class="p-5 flex">
+                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-800">{{ $activity->title }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">{{ $activity->created_at->diffForHumans() }}</p>
+                                    </div>
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-800">Pembayaran diterima untuk pekerjaan "Perbaikan Kulkas"</p>
-                                    <p class="text-xs text-gray-500 mt-1">1 jam yang lalu</p>
-                                </div>
-                            </div>
-                            <div class="p-5 flex">
-                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-800">Pekerjaan baru "Pengantaran Paket" ditambahkan</p>
-                                    <p class="text-xs text-gray-500 mt-1">3 jam yang lalu</p>
-                                </div>
-                            </div>
-                            <div class="p-5 flex">
-                                <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 flex-shrink-0">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-800">Mendapatkan ulasan 5 bintang dari pelanggan</p>
-                                    <p class="text-xs text-gray-500 mt-1">5 jam yang lalu</p>
-                                </div>
-                            </div>
-                            <div class="p-5 flex">
-                                <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-800">Pekerjaan "Perbaikan Kulkas" selesai</p>
-                                    <p class="text-xs text-gray-500 mt-1">1 hari yang lalu</p>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                         <div class="p-4 bg-gray-50 border-t border-gray-200 text-center">
                             <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Lihat semua aktivitas</a>
@@ -590,10 +467,10 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+                labels: @json($incomeData->pluck('month')),
                 datasets: [{
                     label: 'Pendapatan (Rp)',
-                    data: [2500000, 2800000, 3100000, 3500000, 3850000],
+                    data: @json($incomeData->pluck('total')),
                     backgroundColor: 'rgba(59, 130, 246, 0.6)',
                     borderColor: 'rgba(59, 130, 246, 1)',
                     borderWidth: 1,

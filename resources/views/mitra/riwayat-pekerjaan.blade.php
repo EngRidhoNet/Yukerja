@@ -50,7 +50,7 @@
         sidebarOpen: true,
         sidebarCollapsed: window.innerWidth < 1280 ? true : false,
         isMobile: window.innerWidth < 1024,
-        showTutorial: !localStorage.getItem('sidebarTutorialShown'),
+        showTutorial: !localStorage.getItem('riwayatTutorialShown'),
         initSwipeGestures() {
             const mainContent = document.querySelector('#main-content');
             const hammer = new Hammer(mainContent);
@@ -82,7 +82,7 @@
         },
         closeTutorial() {
             this.showTutorial = false;
-            localStorage.setItem('sidebarTutorialShown', true);
+            localStorage.setItem('riwayatTutorialShown', true);
         }
     }" x-init="
         initSwipeGestures(); 
@@ -145,14 +145,8 @@
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Manajemen Area Layanan</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.penawaran') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
-                    x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
-                    <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Penawaran Masuk</span>
-                </a>
-                <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
+
+                <a href="{{ route('logout') }}" class="flex items-center px-6 py-3 hover:bg-gray-800 transition-colors"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -191,7 +185,7 @@
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
-                            <span class="ml-1 bg-yellow-500 rounded-full h-5 w-5 flex items-center justify-center text-white text-xs">4</span>
+                            <span class="ml-1 bg-yellow-500 rounded-full h-5 w-5 flex items-center justify-center text-white text-xs">{{ $notifications->count() }}</span>
                         </button>
                         <div x-show="showNotifications" @click.away="showNotifications = false"
                             x-transition:enter="transition ease-out duration-200"
@@ -203,58 +197,21 @@
                                 <h3 class="text-sm font-semibold text-gray-800">Notifikasi</h3>
                             </div>
                             <div class="max-h-64 overflow-y-auto">
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                @foreach($notifications as $notification)
+                                    <a href="{{ $notification->redirect_url ?? '#' }}" class="flex px-4 py-3 hover:bg-gray-50 border-b">
+                                        <div class="flex-shrink-0">
+                                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pekerjaan baru tersedia</p>
-                                        <p class="text-xs text-gray-500 mt-1">10 menit yang lalu</p>
-                                    </div>
-                                </a>
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-800">{{ $notification->title }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
                                         </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pembayaran diterima</p>
-                                        <p class="text-xs text-gray-500 mt-1">2 jam yang lalu</p>
-                                    </div>
-                                </a>
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50 border-b">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Ada pelanggan menunggu respons</p>
-                                        <p class="text-xs text-gray-500 mt-1">5 jam yang lalu</p>
-                                    </div>
-                                </a>
-                                <a href="#" class="flex px-4 py-3 hover:bg-gray-50">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-800">Pengingat jadwal pekerjaan</p>
-                                        <p class="text-xs text-gray-500 mt-1">Kemarin</p>
-                                    </div>
-                                </a>
+                                    </a>
+                                @endforeach
                             </div>
                             <div class="p-3 border-t">
                                 <a href="#" class="block text-center text-sm font-medium text-blue-600 hover:text-blue-700">
@@ -267,9 +224,13 @@
                         <button @click="showProfileMenu = !showProfileMenu" aria-label="Profile Menu"
                             class="flex items-center focus:outline-none">
                             <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
+                                @if($mitra->profile_photo)
+                                    <img src="{{ asset('storage/' . $mitra->profile_photo) }}" alt="Profile" class="h-8 w-8 rounded-full">
+                                @else
+                                    <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                @endif
                             </div>
                             <svg class="h-4 w-4 ml-1 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -282,13 +243,13 @@
                             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                             class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 dropdown-transition" x-cloak>
                             <div class="py-2 border-b">
-                                <p class="px-4 text-sm font-medium text-gray-800">Budi Santoso</p>
-                                <p class="px-4 text-xs text-gray-500">budi@example.com</p>
+                                <p class="px-4 text-sm font-medium text-gray-800">{{ Auth::user()->name }}</p>
+                                <p class="px-4 text-xs text-gray-500">{{ Auth::user()->email }}</p>
                             </div>
                             <div class="py-1">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
+                                <a href="{{ route('mitra.dashboard.edit-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
+                                <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
                             </div>
                         </div>
                     </div>
@@ -314,129 +275,99 @@
                                 x-transition:leave="transition ease-in duration-100"
                                 x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                                 class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 dropdown-transition" x-cloak>
-                                <div class="p-4">
-                                    <h3 class="text-sm font-semibold text-gray-800 mb-3">Filter Riwayat</h3>
-                                    <div class="mb-4">
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Pekerjaan</label>
-                                        <select class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                                            <option>Semua</option>
-                                            <option>Pembersihan</option>
-                                            <option>Perbaikan</option>
-                                            <option>Pengantaran</option>
-                                        </select>
+                                <form method="GET" action="{{ route('mitra.dashboard.riwayat') }}">
+                                    <div class="p-4">
+                                        <h3 class="text-sm font-semibold text-gray-800 mb-3">Filter Riwayat</h3>
+                                        <div class="mb-4">
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Pekerjaan</label>
+                                            <select name="category" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="">Semua</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Tanggal</label>
+                                            <select name="date" class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="">Semua</option>
+                                                <option value="this_month" {{ request('date') == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                                                <option value="last_month" {{ request('date') == 'last_month' ? 'selected' : '' }}>Bulan Lalu</option>
+                                                <option value="this_year" {{ request('date') == 'this_year' ? 'selected' : '' }}>Tahun Ini</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex justify-end space-x-2">
+                                            <a href="{{ route('mitra.dashboard.riwayat') }}" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800">Reset</a>
+                                            <button type="submit" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                                Terapkan
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="mb-4">
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">Tanggal</label>
-                                        <select class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                                            <option>Semua</option>
-                                            <option>Bulan Ini</option>
-                                            <option>Bulan Lalu</option>
-                                            <option>Tahun Ini</option>
-                                        </select>
-                                    </div>
-                                    <div class="flex justify-end">
-                                        <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
-                                            Terapkan
-                                        </button>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
+                    <!-- Sorting Controls -->
+                    <div class="px-6 py-3 bg-gray-50 flex justify-end space-x-4 text-sm text-gray-600">
+                        <div>
+                            Urutkan:
+                            <a href="{{ route('mitra.dashboard.riwayat', array_merge(request()->query(), ['sort' => 'scheduled_date', 'direction' => request('sort') == 'scheduled_date' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}"
+                                class="ml-2 {{ request('sort', 'scheduled_date') == 'scheduled_date' ? 'font-semibold text-blue-600' : 'hover:text-blue-600' }}">
+                                Tanggal {{ request('sort') == 'scheduled_date' ? (request('direction') == 'asc' ? '↑' : '↓') : '' }}
+                            </a>
+                            <a href="{{ route('mitra.dashboard.riwayat', array_merge(request()->query(), ['sort' => 'budget', 'direction' => request('sort') == 'budget' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}"
+                                class="ml-2 {{ request('sort') == 'budget' ? 'font-semibold text-blue-600' : 'hover:text-blue-600' }}">
+                                Budget {{ request('sort') == 'budget' ? (request('direction') == 'asc' ? '↑' : '↓') : '' }}
+                            </a>
+                            <a href="{{ route('mitra.dashboard.riwayat', array_merge(request()->query(), ['sort' => 'rating', 'direction' => request('sort') == 'rating' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}"
+                                class="ml-2 {{ request('sort') == 'rating' ? 'font-semibold text-blue-600' : 'hover:text-blue-600' }}">
+                                Rating {{ request('sort') == 'rating' ? (request('direction') == 'asc' ? '↑' : '↓') : '' }}
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Jobs List -->
                     <div class="divide-y divide-gray-200">
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Pembersihan Kantor</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Sudirman No. 123, Jakarta Pusat</div>
+                        @forelse($jobs as $job)
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800">{{ $job->title }}</h3>
+                                        <div class="text-sm text-gray-500 mt-1">{{ $job->address }}</div>
+                                        <div class="text-xs text-gray-400 mt-1">{{ $job->serviceCategory->name }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm font-medium text-gray-800">Rp{{ number_format($job->transaction->mitra_earning, 0, ',', '.') }}</div>
+                                        <div class="flex items-center justify-end text-sm text-yellow-600 mt-1">
+                                            <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                            </svg>
+                                            <span>{{ number_format($job->reviews->avg('rating'), 1) ?: 'Belum dinilai' }}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp350.000</div>
-                                    <div class="flex items-center justify-end text-sm text-yellow-600 mt-1">
-                                        <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                <div class="mt-4 flex items-center justify-between">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        <span>4.8</span>
+                                        <span>{{ \Carbon\Carbon::parse($job->scheduled_date)->translatedFormat('l, d M Y • H:i') }}</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <a href="{{ route('mitra.job.detail', $job->id) }}" class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                            Lihat Detail
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Senin, 12 Mei 2025 • 08:00</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                </div>
+                        @empty
+                            <div class="p-6 text-center text-gray-500">
+                                Tidak ada riwayat pekerjaan yang tersedia.
                             </div>
-                        </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Perbaikan AC</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Gatot Subroto No. 45, Jakarta Selatan</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp450.000</div>
-                                    <div class="flex items-center justify-end text-sm text-yellow-600 mt-1">
-                                        <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                        </svg>
-                                        <span>4.9</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Rabu, 7 Mei 2025 • 13:30</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-6 hover:bg-gray-50 transition-colors">
-                            <div class="flex justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-800">Pengantaran Paket</h3>
-                                    <div class="text-sm text-gray-500 mt-1">Jl. Kemang Raya No. 88, Jakarta Selatan</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium text-gray-800">Rp150.000</div>
-                                    <div class="flex items-center justify-end text-sm text-yellow-600 mt-1">
-                                        <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                        </svg>
-                                        <span>4.7</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>Kamis, 1 Mei 2025 • 09:15</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Lihat Detail
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
-                    <div class="p-4 bg-gray-50 border-t border-gray-200 text-center">
-                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Lihat semua riwayat (24)</a>
+                    <!-- Pagination -->
+                    <div class="p-4 bg-gray-50 border-t border-gray-200">
+                        {{ $jobs->appends(request()->query())->links('vendor.pagination.tailwind') }}
                     </div>
                 </div>
                 <!-- Sidebar Tutorial Overlay -->
@@ -451,7 +382,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <h3 class="text-xl font-bold text-gray-800 mt-3">Selamat Datang di Riwayat Pekerjaan!</h3>
-                            <p class="text-gray-600 mt-2 text-sm">Gunakan tombol di pojok kiri atas untuk memperluas atau meminimalkan sidebar navigasi sesuai kebutuhan Anda.</p>
+                            <p class="text-gray-600 mt-2 text-sm">Lihat semua pekerjaan yang telah Anda selesaikan. Gunakan filter untuk mencari berdasarkan kategori atau tanggal, dan urutkan sesuai kebutuhan Anda.</p>
                         </div>
                         <div class="flex justify-center">
                             <button @click="closeTutorial()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
