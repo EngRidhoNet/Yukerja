@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\DashboardMitraController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MitraProfileController;
 use App\Http\Controllers\MitraAuthController;
 use App\Http\Controllers\MitraDashboardController;
 use App\Http\Controllers\JobHistoryController;
@@ -86,9 +87,11 @@ Route::prefix('mitra')->middleware(['auth', 'role:mitra'])->group(function () {
         return view('mitra.penawaran');
     })->name('mitra.dashboard.penawaran');
 
-    Route::get('/dashboard/edit-profile', function () {
-        return view('mitra.edit-profile');
-    })->name('mitra.dashboard.edit-profile');
+    Route::get('/dashboard/edit-profile', [MitraProfileController::class, 'edit'])->name('mitra.dashboard.edit-profile');
+    Route::put('/dashboard/edit-profile/update', [MitraProfileController::class, 'update'])->name('profile.update');
+    Route::post('/dashboard/edit-profile/portofolio', [MitraProfileController::class, 'storePortfolio'])->name('portfolio.store');
+
+
 
     Route::get('/dashboard/pengaturan', function () {
         return view('mitra.pengaturan');

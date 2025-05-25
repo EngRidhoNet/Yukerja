@@ -124,13 +124,7 @@
                     </svg>
                     <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Area Layanan</span>
                 </a>
-                <a href="{{ route('mitra.dashboard.penawaran') }}" class="flex items-center px-4 py-3 rounded-lg bg-blue-600 transition-colors menu-item active"
-                    x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
-                    <svg class="h-5 w-5 text-white" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Penawaran Masuk</span>
-                </a>
+         
                 <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-700 transition-colors menu-item"
                     x-bind:class="{ 'justify-center': sidebarCollapsed && !isMobile }">
                     <svg class="h-5 w-5 text-slate-400" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
