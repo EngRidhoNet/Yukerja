@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Homepage Yuk Kerja</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="homepage_style.css" />
+</head>
+<body>
+  <aside class="sidebar minimized" id="sidebar">
+    <div class="logo">
+      <img src="icons/loho.png" alt="Yukerja Logo" />
+      <div class="logo-text">
+        <span class="text-yuk">Yuk</span>
+        <span class="text-kerja">Kerja</span>
+      </div>
+    </div>
+    <nav class="nav-menu">
+      <a href="#" class="nav-item">
+        <img src="icons/postjob.png" alt="Post Job Icon" class="icon" />
+        <span class="menu-label">Post Job</span>
+      </a>
+      <a href="#" class="nav-item">
+        <img src="icons/chat.png" alt="Chat Icon" class="icon" />
+        <span class="menu-label">Chat</span>
+      </a>
+      <a href="#" class="nav-item">
+        <img src="icons/order-history.png" alt="Order History Icon" class="icon" />
+        <span class="menu-label">Order History</span>
+      </a>
+    </nav>
+    <!-- Tombol Toggle Sidebar -->
+    <button id="toggleSidebar" class="toggle-sidebar-btn">
+      &#9776;
+      <span class="menu-label">Minimize</span>
+    </button>
+  </aside>
+
+  <header class="navbar">
+    <div class="left-menu">
+      <img src="images/Logo Yuk Kerja.png" alt="Logo" class="logo" />
+    </div>
+    <form id="searchForm" action="homepage.html" method="GET" class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" name="q" placeholder="Cari jasa" />
+    </form>
+
+    <div class="right-menu">
+      <img src="icons/notifbell.png" alt="Notifikasi" class="custom-icon" />
+      <span class="notif-badge">4</span>
+      <div class="user-menu-container" onclick="toggleMenu()">
+        <img src="icons/usericon.png" alt="User" class="custom-icon" />
+        <i id="arrowIcon" class="fa-solid fa-chevron-down"></i>
+        <div id="dropdownMenu" class="dropdown hidden">
+          <div class="profile-info">
+            <img src="icons/usericon.png" alt="Profile Picture" class="custom-icon" />
+            <div>
+              <div class="profile-name">user</div>
+              <div class="profile-email">user@gmail.com</div>
+            </div>
+          </div>
+          <button class="edit-button">Edit Profil</button>
+          <div class="menu-item">
+            <img src="icons/favorit.png" alt="Mitra Favorit" class="icon-img" />
+            <span>Mitra Favorit</span>
+          </div>
+          <div class="menu-item">
+            <img src="icons/money.png" alt="Riwayat Transaksi" class="icon-img" />
+            <span>Riwayat Transaksi</span>
+          </div>
+          <div class="menu-item logout" onclick="window.location.href='customer_signin.html'">
+            <img src="icons/logout.png" alt="Keluar" class="icon-img" />
+            <span>Keluar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="edit-profile-container">
+    <div class="nav-tabs">
+      <span class="tab active" data-tab="profil">Profil Pribadi</span>
+      <span class="tab" data-tab="favorit">Mitra Favorit</span>
+      <span class="tab" data-tab="riwayat">Riwayat Transaksi</span>
+    </div>
+
+    <!-- TAB 1: Profil -->
+    <div class="tab-content active" id="profil">
+      <div class="edit-profile-box">
+        <div class="profile-section">
+          <div class="profile-picture"></div>
+          <button class="btn-ganti-gambar">Ganti Gambar</button>
+        </div>
+
+        <div class="form-section">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <div class="input-container">
+              <input type="text" id="username" placeholder="Masukkan username">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="nama">Nama</label>
+            <div class="input-container">
+              <input type="text" id="nama" placeholder="Masukkan nama Anda">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-container">
+              <input type="email" id="email" placeholder="Masukkan email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Kata Sandi</label>
+            <div class="input-container">
+              <input type="password" id="password" placeholder="********">
+              <a class="change-password" href="#">change password</a>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="nohp">No. Hp</label>
+            <div class="input-container">
+              <input type="text" id="nohp" placeholder="08xxxxxxxxxx">
+            </div>
+          </div>
+
+          <button class="btn-save">Save</button>
+        </div>
+      </div>
+    </div>
+
+  <!-- TAB 2: Mitra Favorit -->
+<div class="tab-content" id="favorit">
+  <div class="mitra-grid">
+    <!-- Mitra 1 -->
+    <div class="mitra-card">
+      <div class="mitra-box">
+        <div class="mitra-image"></div>
+        <div class="mitra-info">
+          <h4 class="mitra-title">Tambal Ban Setia<br>Sukses</h4>
+          <p class="mitra-distance">1,2 km</p>
+        </div>
+        <button class="btn-follow">Ikuti</button>
+        <div class="mitra-actions">
+          <button class="btn-yellow">Pesan Lagi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mitra 2 -->
+    <div class="mitra-card">
+      <div class="mitra-box">
+        <div class="mitra-image"></div>
+        <div class="mitra-info">
+          <h4 class="mitra-title">Service Motor Amanah</h4>
+          <p class="mitra-distance">2,4 km</p>
+        </div>
+        <button class="btn-follow">Ikuti</button>
+        <div class="mitra-actions">
+          <button class="btn-yellow">Pesan Lagi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mitra 3 -->
+    <div class="mitra-card">
+      <div class="mitra-box">
+        <div class="mitra-image"></div>
+        <div class="mitra-info">
+          <h4 class="mitra-title">Salon Mobil Kinclong</h4>
+          <p class="mitra-distance">3,1 km</p>
+        </div>
+        <button class="btn-follow">Ikuti</button>
+        <div class="mitra-actions">
+          <button class="btn-yellow">Pesan Lagi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mitra 4 -->
+    <div class="mitra-card">
+      <div class="mitra-box">
+        <div class="mitra-image"></div>
+        <div class="mitra-info">
+          <h4 class="mitra-title">Cuci AC Sejuk Selalu</h4>
+          <p class="mitra-distance">1,8 km</p>
+        </div>
+        <button class="btn-follow">Ikuti</button>
+        <div class="mitra-actions">
+          <button class="btn-yellow">Pesan Lagi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: Riwayat Transaksi -->
+<div class="tab-content" id="riwayat">
+  <div class="riwayat-container">
+
+    <!-- CARD 1: Dibatalkan Konsumen -->
+    <div class="riwayat-card">
+      <div class="riwayat-header">
+        <div class="left-header">
+          <i class="fa-solid fa-briefcase"></i>
+          <span class="riwayat-title">Riwayat Transaksi</span>
+        </div>
+        <span class="riwayat-date">12 April 2025</span>
+        <div class="riwayat-status dibatalkan-konsumen">Dibatalkan Konsumen</div>
+      </div>
+
+      <div class="riwayat-footer">
+        <p>Pembayaran sudah dikembalikan ke metode pembayaran yang anda pakai</p>
+        <a href="transaksi_dikembalikan.html" style="text-decoration: none;">Lihat Detail</a>
+      </div>
+
+      <div class="riwayat-content">
+        <div>
+          <div class="riwayat-nama">Tambal Ban Setia Sukses</div>
+          <div class="riwayat-layanan-harga">
+            <div class="riwayat-layanan">Ban Bocor</div>
+            <div class="riwayat-harga">Rp. 15.000</div>
+          </div>
+        </div>
+        <div class="riwayat-image-container">
+          <img src="images/image14.png" class="riwayat-image" />
+        </div>
+        <div class="riwayat-total-container-1">
+          <span class="label">Total Belanja</span>
+          <strong class="harga">Rp. 15.000</strong>
+        </div>
+        <div class="menu-titik-tiga">
+          <div class="ellipse"></div>
+          <div class="ellipse"></div>
+          <div class="ellipse"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2: Selesai -->
+    <div class="riwayat-card">
+      <div class="riwayat-header">
+        <div class="left-header">
+          <i class="fa-solid fa-briefcase"></i>
+          <span class="riwayat-title">Riwayat Transaksi</span>
+        </div>
+        <span class="riwayat-date">10 April 2025</span>
+        <div class="riwayat-status selesai">Selesai</div>
+      </div>
+
+      <div class="riwayat-content">
+        <div>
+          <div class="riwayat-nama">Bengkel Motor Amanah</div>
+          <div class="riwayat-layanan-harga">
+            <div class="riwayat-layanan">Ganti Oli</div>
+            <div class="riwayat-harga">Rp. 25.000</div>
+          </div>
+        </div>
+        <div class="riwayat-image-container">
+          <img src="images/image14.png" class="riwayat-image" />
+        </div>
+        <div class="riwayat-total-container-2">
+          <span class="label">Total Belanja</span>
+          <strong class="harga">Rp. 25.000</strong>
+        </div>
+        <div class="riwayat-footer-2">
+          <a href="transaksi_berhasil.html" class="lihat-detail-link">Lihat Detail Transaksi</a>
+        </div>
+        <div class="menu-titik-tiga">
+          <div class="ellipse"></div>
+          <div class="ellipse"></div>
+          <div class="ellipse"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  <script>
+    const tabButtons = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Hapus active di semua tab dan konten
+        tabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        // Aktifkan tab yang diklik
+        btn.classList.add('active');
+        const tabId = btn.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    function toggleMenu() {
+  const menu = document.getElementById("dropdownMenu");
+  const arrow = document.getElementById("arrowIcon");
+  menu.classList.toggle("hidden");
+  arrow.classList.toggle("fa-chevron-down");
+  arrow.classList.toggle("fa-chevron-up");
+}
+document.getElementById("logoutButton").addEventListener("click", function () {
+    // Tambahkan kode logout lain jika diperlukan, misal: hapus session/localStorage
+
+    window.location.href = "customer_signin.html"; // Redirect ke halaman login
+  });
+  const toggleSidebar = document.getElementById("toggleSidebar");
+  const sidebar = document.getElementById("sidebar");
+
+  toggleSidebar.addEventListener("click", () => {
+    sidebar.classList.toggle("minimized");
+  });
+  </script>
+</body>
+</html>
