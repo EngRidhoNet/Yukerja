@@ -52,18 +52,35 @@ Route::get('/service/{id}', [HomeController::class, 'serviceDetail'])->name('ser
 // Routes protected by Customer Authentication and Role
 Route::middleware(['auth', 'role:customer'])->group(function () {
 
-    // Customer dashboard routes
-    Route::get('/customer/dashboard', [HomeController::class, 'index'])->name('customer.dashboard');
-
-    Route::get('/customer/dashboard/category', [HomeController::class, 'category'])->name('customer.dashboard.category');
-
-    // Edit Profile route replaced by controller method to pass data dynamically
-     Route::get('/customer/edit_profile', [HomeController::class, 'editProfile'])->name('customer.edit_profile');
-
-    // Transaction status pages
-    Route::view('/transaksi_berhasil', 'customer.transaksi_berhasil')->name('transaksi.berhasil');
-    Route::view('/transaksi_dikembalikan', 'customer.transaksi_dikembalikan')->name('transaksi.dikembalikan');
 });
+// Customer dashboard routes
+Route::get('/customer/dashboard', [HomeController::class, 'index'])->name('customer.dashboard');
+
+Route::get('/customer/dashboard/category', [HomeController::class, 'category'])->name('customer.dashboard.category');
+
+use App\Http\Controllers\PostJobController;
+
+// Customer Post Job route with auth middleware
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/customer/post_job', [HomeController::class, 'postJob'])->name('customer.post_job');
+    Route::post('/customer/post_job', [PostJobController::class, 'store'])->name('customer.post_job.store');
+});
+
+//Customer apply job route
+Route::get('/customer/apply_job', [HomeController::class, 'applyJob'])->name('customer.apply_job');
+
+//Customer chat route
+Route::get('/customer/chat', [HomeController::class, 'chat'])->name('customer.chat');
+
+//Customer Order History route
+Route::get('/customer/order_history', [HomeController::class, 'orderHistory'])->name('customer.order_history');
+
+// Edit Profile route replaced by controller method to pass data dynamically
+ Route::get('/customer/edit_profile', [HomeController::class, 'editProfile'])->name('customer.edit_profile');
+
+// Transaction status pages
+Route::view('/transaksi_berhasil', 'customer.transaksi_berhasil')->name('transaksi.berhasil');
+Route::view('/transaksi_dikembalikan', 'customer.transaksi_dikembalikan')->name('transaksi.dikembalikan');
 
 // Routes protected by Mitra Authentication and Role
 Route::prefix('mitra')->middleware(['auth', 'role:mitra'])->group(function () {

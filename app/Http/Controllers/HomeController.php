@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
+ 
 use Illuminate\Http\Request;
 use App\Models\Mitra;
-
+use App\Models\ServiceCategory;
+use App\Models\JobPost;
+ 
 class HomeController extends Controller
 {
     /**
-     * Tampilkan halaman utama dengan daftar mitra
+     * Tampilkan halaman utama dengan daftar mitra dan job posts
      *
      * @return \Illuminate\View\View
      */
@@ -17,10 +19,13 @@ class HomeController extends Controller
         // Ambil 12 mitra teratas berdasarkan rating
         $mitras = Mitra::orderByDesc('avg_rating')->limit(12)->get();
 
-        // Kirim data mitra ke view
-        return view('customer.homepage', compact('mitras'));
+        // Ambil 10 job posts terbaru
+        $jobPosts = JobPost::orderByDesc('created_at')->limit(10)->get();
+ 
+        // Kirim data mitra dan job posts ke view
+        return view('customer.homepage', compact('mitras', 'jobPosts'));
     }
-
+ 
     /**
      * Tampilkan mitra berdasarkan kategori layanan
      *
@@ -33,15 +38,29 @@ class HomeController extends Controller
         $mitras = Mitra::where('service_category', $categorySlug)
             ->orderByDesc('avg_rating')
             ->get();
-
+ 
         // Format kategori untuk tampilan
         $displayCategory = str_replace('-', ' ', $categorySlug);
-
+ 
         return view('customer.category', [
             'category' => $displayCategory,
             'mitras' => $mitras
         ]);
     }
+    /**
+     * Tampilkan halaman untuk posting pekerjaan baru
+     *
+     * @return \Illuminate\View\View
+     */
+    public function postJob()
+    {
+        // Ambil kategori layanan yang aktif
+        $categories = ServiceCategory::where('is_active', true)->get();
+ 
+        // Kirim data kategori ke view
+        return view('customer.post_job', compact('categories'));
+    }
+
 
     /**
      * Detail layanan (bila ada)

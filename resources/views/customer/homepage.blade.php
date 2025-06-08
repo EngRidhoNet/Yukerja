@@ -17,20 +17,21 @@
         <span class="text-kerja">Kerja</span>
       </div>
     </div>
-    <nav class="nav-menu">
-      <a href="#" class="nav-item">
-        <img src="{{ asset('icons/postjob.png') }}" alt="Post Job Icon" class="icon" />
-        <span class="menu-label">Post Job</span>
-      </a>
-      <a href="#" class="nav-item">
-        <img src="{{ asset('icons/chat.png') }}" alt="Chat Icon" class="icon" />
-        <span class="menu-label">Chat</span>
-      </a>
-      <a href="#" class="nav-item">
-        <img src="{{ asset('icons/order-history.png') }}" alt="Order History Icon" class="icon" />
-        <span class="menu-label">Order History</span>
-      </a>
-    </nav>
+<nav class="nav-menu">
+<a href="{{ route('customer.post_job') }}" class="nav-item">
+  <img src="{{ asset('icons/postjob.png') }}" alt="Post Job Icon" class="icon" />
+  <span class="menu-label">Post Job</span>
+
+<a href="{{ route('customer.chat') }}" class="nav-item">
+  <img src="{{ asset('icons/chat.png') }}" alt="Chat Icon" class="icon" />
+  <span class="menu-label">Chat</span>
+</a>
+
+<a href="{{ route('customer.order_history') }}" class="nav-item">
+  <img src="{{ asset('icons/order-history.png') }}" alt="Order History Icon" class="icon" />
+  <span class="menu-label">Order History</span>
+</a>
+</nav>
     <!-- Tombol Toggle Sidebar -->
     <button id="toggleSidebar" class="toggle-sidebar-btn">
       &#9776;
@@ -156,9 +157,9 @@
   
 
   <!-- Untuk Kamu -->
-  <div id="card-untukkamu" class="card-container" style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <div id="card-untukkamu" class="card-container">
     @foreach ($mitras as $mitra)
-      <div class="card-job" style="width: calc(33.333% - 10px);">
+      <div class="card-job">
         <div class="card-header">
           <div class="img-placeholder">
             @if ($mitra->profile_photo)
@@ -176,7 +177,34 @@
             </div>
           </div>
         </div>
-        <div class="price">Mulai dari Rp 25.000</div> {{-- Bisa dibuat dinamis jika ada harga --}}
+        <div class="price">Mulai dari Rp 25.000</div>
+        <div class="card-footer">
+          <button class="button-chat">Chat</button>
+          <button class="button-order">Pesan Sekarang</button>
+        </div>
+      </div>
+    @endforeach
+  </div>
+
+  <!-- Job Posts Section -->
+  <h2 style="margin-top: 2rem; font-family: 'Poppins', sans-serif; color: #0B2F57;">Job Posts Terbaru</h2>
+  <div id="card-jobposts" class="card-container">
+    @foreach ($jobPosts as $job)
+      <div class="card-job">
+        <div class="card-header">
+          <div class="text-info">
+            <div class="title">{{ $job->title }}</div>
+            <div class="description" style="margin-top: 0.5rem; font-size: 0.9rem; color: #333;">
+              {{ Str::limit($job->description, 100) }}
+            </div>
+            <div class="budget" style="margin-top: 0.5rem; font-weight: 600; color: #0B2F57;">
+              Budget: Rp {{ number_format($job->budget, 0, ',', '.') }}
+            </div>
+            <div class="scheduled-date" style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+              Tanggal Jadwal: {{ \Carbon\Carbon::parse($job->scheduled_date)->format('d M Y') }}
+            </div>
+          </div>
+        </div>
         <div class="card-footer">
           <button class="button-chat">Chat</button>
           <button class="button-order">Pesan Sekarang</button>
