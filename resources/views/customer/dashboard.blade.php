@@ -89,112 +89,67 @@
             <!-- Content -->
             <main class="px-4 py-4 md:py-6 flex-1 overflow-y-auto">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 space-y-2 sm:space-y-0">
-                    <h4 class="text-lg md:text-xl font-semibold">Layanan Tambal Ban Terdekat</h4>
+                    <h4 class="text-lg md:text-xl font-semibold">Layanan</h4>
                     <button class="flex items-center text-gray-800 font-semibold hover:text-blue-600 transition-colors duration-200">
                         <i class="fas fa-sliders-h mr-2"></i> Filters
                     </button>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    <!-- Service Provider Cards -->
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                        <div class="flex items-start mb-3">
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mr-3 flex items-center justify-center">
-                                <i class="fas fa-tools text-white text-lg md:text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm md:text-base font-semibold">Tambal Ban</div>
-                                <div class="text-sm md:text-base font-semibold text-gray-800">Setia Sukses</div>
-                                <div class="flex items-center mt-1">
-                                    <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
-                                    <span class="mr-2 text-sm">4.8</span>
-                                    <span class="text-gray-500 text-xs md:text-sm">0.5 km</span>
+                    @foreach ($mitras as $mitra)
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+                            <div class="flex items-start mb-3">
+                                <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mr-3 flex items-center justify-center">
+                                    <i class="fas fa-tools text-white text-lg md:text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm md:text-base font-semibold">{{ $mitra->service_category ?? 'Layanan' }}</div>
+                                    <div class="text-sm md:text-base font-semibold text-gray-800">{{ $mitra->business_name }}</div>
+                                    <div class="flex items-center mt-1">
+                                        <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
+                                        <span class="mr-2 text-sm">{{ number_format($mitra->avg_rating, 1) }}</span>
+                                        <span class="text-gray-500 text-xs md:text-sm">{{ $mitra->service_area ?? 'N/A' }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="text-sm text-gray-500 mb-3">Mulai dari Rp 15.000</div>
-                        <div class="flex space-x-2">
-                            <button class="bg-blue-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 flex-1">Chat</button>
-                            <button class="bg-yellow-400 text-black text-xs md:text-sm px-3 py-2 rounded-md hover:bg-yellow-500 transition-colors duration-200 flex-1">Pesan</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                        <div class="flex items-start mb-3">
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full mr-3 flex items-center justify-center">
-                                <i class="fas fa-wrench text-white text-lg md:text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm md:text-base font-semibold">Tambal Ban</div>
-                                <div class="text-sm md:text-base font-semibold text-gray-800">Jaya Motor</div>
-                                <div class="flex items-center mt-1">
-                                    <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
-                                    <span class="mr-2 text-sm">4.6</span>
-                                    <span class="text-gray-500 text-xs md:text-sm">0.8 km</span>
-                                </div>
+                            <div class="text-sm text-gray-500 mb-3">Mulai dari Rp {{ number_format(10000 + ($mitra->id * 5000), 0, ',', '.') }}</div>
+                            <div class="flex space-x-2">
+                                <button class="bg-blue-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 flex-1">Chat</button>
+                                <button class="bg-yellow-400 text-black text-xs md:text-sm px-3 py-2 rounded-md hover:bg-yellow-500 transition-colors duration-200 flex-1">Pesan</button>
+                                <button class="bg-green-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-200 flex-1 detail-mitra" data-id="{{ $mitra->id }}">Detail Mitra</button>
                             </div>
                         </div>
-                        <div class="text-sm text-gray-500 mb-3">Mulai dari Rp 12.000</div>
-                        <div class="flex space-x-2">
-                            <button class="bg-blue-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 flex-1">Chat</button>
-                            <button class="bg-yellow-400 text-black text-xs md:text-sm px-3 py-2 rounded-md hover:bg-yellow-500 transition-colors duration-200 flex-1">Pesan</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                        <div class="flex items-start mb-3">
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-full mr-3 flex items-center justify-center">
-                                <i class="fas fa-car text-white text-lg md:text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm md:text-base font-semibold">Tambal Ban</div>
-                                <div class="text-sm md:text-base font-semibold text-gray-800">Mandiri Service</div>
-                                <div class="flex items-center mt-1">
-                                    <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
-                                    <span class="mr-2 text-sm">4.7</span>
-                                    <span class="text-gray-500 text-xs md:text-sm">1.2 km</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-sm text-gray-500 mb-3">Mulai dari Rp 18.000</div>
-                        <div class="flex space-x-2">
-                            <button class="bg-blue-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 flex-1">Chat</button>
-                            <button class="bg-yellow-400 text-black text-xs md:text-sm px-3 py-2 rounded-md hover:bg-yellow-500 transition-colors duration-200 flex-1">Pesan</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                        <div class="flex items-start mb-3">
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full mr-3 flex items-center justify-center">
-                                <i class="fas fa-motorcycle text-white text-lg md:text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm md:text-base font-semibold">Tambal Ban</div>
-                                <div class="text-sm md:text-base font-semibold text-gray-800">Barokah Motor</div>
-                                <div class="flex items-center mt-1">
-                                    <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
-                                    <span class="mr-2 text-sm">4.9</span>
-                                    <span class="text-gray-500 text-xs md:text-sm">0.3 km</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-sm text-gray-500 mb-3">Mulai dari Rp 10.000</div>
-                        <div class="flex space-x-2">
-                            <button class="bg-blue-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 flex-1">Chat</button>
-                            <button class="bg-yellow-400 text-black text-xs md:text-sm px-3 py-2 rounded-md hover:bg-yellow-500 transition-colors duration-200 flex-1">Pesan</button>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </main>
         </div>
     </div>
 
+    <!-- Modal -->
+    <div id="mitraModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Detail Mitra</h3>
+                <button id="closeModal" class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modalContent">
+                <p class="text-gray-600">Memuat data...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         const menuToggle = document.getElementById('menu-toggle');
         const closeSidebar = document.getElementById('close-sidebar');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
+        const mitraModal = document.getElementById('mitraModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalContent = document.getElementById('modalContent');
 
         function openSidebar() {
             sidebar.classList.remove('-translate-x-full');
@@ -206,9 +161,20 @@
             overlay.classList.add('hidden');
         }
 
+        function openModal() {
+            mitraModal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+        }
+
+        function closeModalFn() {
+            mitraModal.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }
+
         menuToggle.addEventListener('click', openSidebar);
         closeSidebar.addEventListener('click', closeSidebarFn);
         overlay.addEventListener('click', closeSidebarFn);
+        closeModal.addEventListener('click', closeModalFn);
 
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -217,11 +183,76 @@
             }
         });
 
-        // Close sidebar on escape key
+        // Close sidebar/modal on escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+            if (e.key === 'Escape') {
                 closeSidebarFn();
+                closeModalFn();
             }
+        });
+
+        // Fetch mitra details on "Detail Mitra" button click
+        document.querySelectorAll('.detail-mitra').forEach(button => {
+            button.addEventListener('click', function() {
+                const mitraId = this.getAttribute('data-id');
+                $.ajax({
+                    url: `/mitra/${mitraId}`,
+                    method: 'GET',
+                    success: function(data) {
+                        let html = `<h4 class="text-lg font-semibold mb-2">${data.business_name}</h4>`;
+                        html += `<p class="text-gray-600 mb-4">${data.description ?? 'Tidak ada deskripsi'}</p>`;
+
+                        // Skills Section
+                        if (data.skills && data.skills.length > 0) {
+                            html += `<h5 class="text-md font-semibold mb-2">Keterampilan</h5>`;
+                            html += `<ul class="list-disc pl-5 mb-4">`;
+                            data.skills.forEach(skill => {
+                                html += `<li>${skill.skill_name} (${skill.experience_years ? skill.experience_years + ' tahun' : 'N/A'})`;
+                                if (skill.certification) {
+                                    html += ` - Sertifikasi: ${skill.certification}`;
+                                }
+                                html += `</li>`;
+                            });
+                            html += `</ul>`;
+                        } else {
+                            html += `<p class="text-gray-600 mb-4">Belum ada keterampilan yang terdaftar.</p>`;
+                        }
+
+                        // Portfolio Section
+                        if (data.portfolio && data.portfolio.length > 0) {
+                            html += `<h5 class="text-md font-semibold mb-2">Portofolio</h5>`;
+                            html += `<div class="grid grid-cols-1 gap-4">`;
+                            data.portfolio.forEach(item => {
+                                html += `<div class="border p-3 rounded-md">`;
+                                html += `<h6 class="font-semibold">${item.title}</h6>`;
+                                html += `<p class="text-gray-600">${item.description ?? 'Tidak ada deskripsi'}</p>`;
+                                if (item.image_url) {
+                                    html += `<img src="${item.image_url}" alt="${item.title}" class="w-full h-32 object-cover rounded-md mt-2">`;
+                                }
+                                if (item.completion_date) {
+                                    html += `<p class="text-sm text-gray-500">Selesai: ${new Date(item.completion_date).toLocaleDateString('id-ID')}</p>`;
+                                }
+                                html += `</div>`;
+                            });
+                            html += `</div>`;
+                        } else {
+                            html += `<p class="text-gray-600 mb-4">Belum ada portofolio yang terdaftar.</p>`;
+                        }
+
+                        // Fallback if no skills or portfolio
+                        if ((!data.skills || data.skills.length === 0) && (!data.portfolio || data.portfolio.length === 0)) {
+                            html += `<p class="text-gray-600 font-semibold">Data mitra belum lengkap nih!</p>`;
+                        }
+
+                        modalContent.innerHTML = html;
+                        openModal();
+                    },
+                    error: function() {
+                        modalContent.innerHTML = `<p class="text-red-600">Gagal memuat data mitra.</p>`;
+                        openModal();
+                    }
+                });
+            });
         });
     </script>
 </body>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AuthController,
     CustomerAuthController,
+    DashboardCustomerController,
     DashboardMitraController,
     HomeController,
     MitraProfileController,
@@ -55,10 +56,14 @@ Route::post('auth/register/mitra', [MitraAuthController::class, 'register'])->na
 // Customer Dashboard
 // ==============================
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->group(function () {
-    Route::get('/dashboard', [HomeController::class, 'index'])->name('customer.dashboard');
-    Route::get('/dashboard/post-job', function () {
-        return view('customer.post_job');
-    })->name('customer.dashboard.post-job');
+    Route::get('/dashboard', [DashboardCustomerController::class, 'index'])->name('customer.dashboard');
+    Route::get('/dashboard/mitra/{id}', [DashboardCustomerController::class, 'show'])->name('customer.dashboard.mitra.show');
+    // Route::get('/dashboard/post-job', function () {
+    //     return view('customer.post_job');
+    // })->name('customer.dashboard.post-job');
+
+    Route::get('/dashboard/post-job', [App\Http\Controllers\JobPostController::class, 'create'])->name('customer.dashboard.post-job');
+    Route::post('/dashboard/post-job/store', [App\Http\Controllers\JobPostController::class, 'store'])->name('customer.dashboard.post-job.store');
     Route::get('/dashboard/history', function(){
         return view('customer.order_history');
     })->name('customer.dashboard.history');
