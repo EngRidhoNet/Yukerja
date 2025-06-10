@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Providers\Filament;
-
-
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -60,7 +58,7 @@ class AdminPanelProvider extends PanelProvider
     public function getWidgets(): array
     {
         return [
-
+            \App\Filament\Widgets\DashboardStatsWidget::class,
         ];
     }
 
