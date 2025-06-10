@@ -31,10 +31,14 @@
                 </a>
             </li>
             <li class="mt-8 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                <a href="#" class="flex items-center px-4 py-3 hover:bg-red-600 text-red-200 hover:text-white transition-colors duration-200">
-                    <i class="fas fa-sign-out-alt mr-3"></i> Logout
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="flex items-center w-full text-left px-4 py-3 hover:bg-red-600 text-red-200 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-sign-out-alt mr-3"></i> Logout
+                    </button>
+                </form>
             </li>
+            
         </ul>
     </nav>
 </div>

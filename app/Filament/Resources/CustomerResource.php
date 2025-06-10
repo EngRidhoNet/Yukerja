@@ -26,10 +26,10 @@ class CustomerResource extends Resource
             ->schema([
                 Section::make('User Information')
                     ->schema([
-                        Forms\Components\Select::make('user_id')
-                            ->relationship('user', 'name')
-                            ->required()
-                            ->searchable(),
+                        // Forms\Components\Select::make('user_id')
+                        //     ->relationship('user', 'name')
+                        //     ->required()
+                        //     ->searchable(),
                         Forms\Components\TextInput::make('phone')
                             ->tel()
                             ->nullable()

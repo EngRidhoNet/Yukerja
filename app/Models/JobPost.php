@@ -50,4 +50,9 @@ class JobPost extends Model
     {
         return $this->hasOne(Transaction::class);
     }
+    // app/Models/JobPost.php
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'job_post_id');
+    }
 }

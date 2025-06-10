@@ -11,7 +11,11 @@ use App\Http\Controllers\{
     MitraAuthController,
     MitraDashboardController,
     JobHistoryController,
-    ServiceAreaController
+    ServiceAreaController,
+    JobApplicationController,
+    JobPostController,
+    TransactionController
+
 };
 
 /*
@@ -55,21 +59,26 @@ Route::post('auth/register/mitra', [MitraAuthController::class, 'register'])->na
 // ==============================
 // Customer Dashboard
 // ==============================
-Route::middleware(['auth', 'role:customer'])->prefix('customer')->group(function () {
-    Route::get('/dashboard', [DashboardCustomerController::class, 'index'])->name('customer.dashboard');
-    Route::get('/dashboard/mitra/{id}', [DashboardCustomerController::class, 'show'])->name('customer.dashboard.mitra.show');
-    // Route::get('/dashboard/post-job', function () {
-    //     return view('customer.post_job');
-    // })->name('customer.dashboard.post-job');
+Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardCustomerController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/mitra/{id}', [DashboardCustomerController::class, 'show'])->name('dashboard.mitra.show');
 
-    Route::get('/dashboard/post-job', [App\Http\Controllers\JobPostController::class, 'create'])->name('customer.dashboard.post-job');
-    Route::post('/dashboard/post-job/store', [App\Http\Controllers\JobPostController::class, 'store'])->name('customer.dashboard.post-job.store');
-    Route::get('/dashboard/history', function(){
-        return view('customer.order_history');
-    })->name('customer.dashboard.history');
-    Route::get('dashboard/penawaran', function () {
-        return view('customer.penawaran');
-    })->name('customer.dashboard.penawaran');
+    // Job Posts
+    Route::get('/dashboard/post-job', [JobPostController::class, 'create'])->name('dashboard.post-job');
+    Route::post('/dashboard/post-job/store', [JobPostController::class, 'store'])->name('dashboard.post-job.store');
+
+    // Job Applications (Penawaran)
+    Route::get('/dashboard/penawaran', [JobApplicationController::class, 'index'])->name('dashboard.penawaran');
+    Route::get('/jobs/{jobPost}/applications', [JobApplicationController::class, 'getApplications'])->name('dashboard.applications.get');
+    Route::post('/applications/{application}/accept', [JobApplicationController::class, 'accept'])->name('dashboard.applications.accept');
+    Route::post('/applications/{application}/reject', [JobApplicationController::class, 'reject'])->name('dashboard.applications.reject');
+    Route::post('/applications/{application}/rate', [JobApplicationController::class, 'rate'])->name('dashboard.applications.rate');
+
+    // Order History
+    Route::get('/dashboard/history', [TransactionController::class, 'index'])->name('dashboard.history');
+    Route::get('/dashboard/history/{id}', [TransactionController::class, 'show'])->name('dashboard.history.show');
+    Route::get('/dashboard/history/export', [TransactionController::class, 'export'])->name('dashboard.history.export');
 });
 
 // ==============================
@@ -88,6 +97,8 @@ Route::middleware(['auth', 'role:mitra'])->prefix('mitra/dashboard')->group(func
     Route::get('/edit-profile', [MitraProfileController::class, 'edit'])->name('mitra.dashboard.edit-profile');
     Route::put('/edit-profile/update', [MitraProfileController::class, 'update'])->name('profile.update');
     Route::post('/edit-profile/portofolio', [MitraProfileController::class, 'storePortfolio'])->name('portfolio.store');
+    Route::get('/job/{job}/detail', [MitraDashboardController::class, 'jobDetail'])->name('mitra.job.detail');
+    Route::post('/job/{job}/apply', [MitraDashboardController::class, 'applyJob'])->name('mitra.job.apply');
 
     // Pengaturan
     Route::view('/pengaturan', 'mitra.pengaturan')->name('mitra.dashboard.pengaturan');

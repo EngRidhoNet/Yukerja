@@ -2,9 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Widgets\MitraLengkapStat;
-use App\Filament\Widgets\UserRoleChart;
-use App\Filament\Widgets\ServiceCategoryChart;
+
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -62,15 +60,13 @@ class AdminPanelProvider extends PanelProvider
     public function getWidgets(): array
     {
         return [
-            UserRoleChart::class,
-            ServiceCategoryChart::class
+
         ];
     }
 
     public static function getHeaderWidgets(): array
     {
         return [
-            MitraLengkapStat::class,
         ];
     }
 

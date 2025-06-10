@@ -38,7 +38,10 @@
                     <!-- Search Bar -->
                     <div class="flex-grow mx-2 md:mx-4 max-w-xl relative">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
-                        <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base" placeholder="Cari riwayat pesanan...">
+                        <input type="text" id="searchInput" class="w-full pl-10 pr-10 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base" placeholder="Cari riwayat pesanan...">
+                        <button id="refreshBtn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600" title="Refresh data">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                     </div>
                     
                     <!-- Right Side Icons -->
@@ -49,13 +52,13 @@
                         </a>
                         <div class="relative group">
                             <button class="focus:outline-none">
-                                <img src="https://via.placeholder.com/32/4B5563/FFFFFF?text=P" alt="Profile" class="rounded-full w-8 h-8">
+                                <img src="https://via.placeholder.com/32/4B5563/FFFFFF?text={{ auth()->user()->name[0] }}" alt="Profile" class="rounded-full w-8 h-8">
                             </button>
                             <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                 <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profil</a>
-                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Pesanan</a>
+                                <a href="{{ route('customer.dashboard.history') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Pesanan</a>
                                 <hr>
-                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Keluar</a>
+                                <a href="{{ route('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Keluar</a>
                             </div>
                         </div>
                     </div>
@@ -85,6 +88,9 @@
                         <button onclick="filterOrders('failed')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors duration-200">
                             <i class="fas fa-times-circle mr-1"></i> Gagal
                         </button>
+                        <button onclick="exportToCSV()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors duration-200">
+                            <i class="fas fa-download mr-1"></i> Export CSV
+                        </button>
                     </div>
                 </div>
 
@@ -97,7 +103,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-600">Total Pesanan</p>
-                                <p class="text-xl font-semibold text-gray-900">127</p>
+                                <p class="text-xl font-semibold text-gray-900 stats-total">{{ $stats['total'] }}</p>
                             </div>
                         </div>
                     </div>
@@ -109,7 +115,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-600">Selesai</p>
-                                <p class="text-xl font-semibold text-gray-900">98</p>
+                                <p class="text-xl font-semibold text-gray-900 stats-completed">{{ $stats['completed'] }}</p>
                             </div>
                         </div>
                     </div>
@@ -121,7 +127,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-600">Pending</p>
-                                <p class="text-xl font-semibold text-gray-900">24</p>
+                                <p class="text-xl font-semibold text-gray-900 stats-pending">{{ $stats['pending'] }}</p>
                             </div>
                         </div>
                     </div>
@@ -133,7 +139,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-600">Dibatalkan</p>
-                                <p class="text-xl font-semibold text-gray-900">5</p>
+                                <p class="text-xl font-semibold text-gray-900 stats-failed">{{ $stats['failed'] }}</p>
                             </div>
                         </div>
                     </div>
@@ -160,32 +166,40 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" id="ordersTableBody">
-                                <!-- Order rows will be inserted here by JavaScript -->
+                                <!-- Order rows will be inserted by JavaScript -->
                             </tbody>
                         </table>
                     </div>
                     
                     <!-- Mobile Cards -->
                     <div class="md:hidden" id="mobileOrdersList">
-                        <!-- Mobile order cards will be inserted here by JavaScript -->
+                        <!-- Mobile order cards will be inserted by JavaScript -->
                     </div>
                 </div>
 
                 <!-- Pagination -->
-                <div class="flex items-center justify-between mt-6">
+                <div class="flex items-center justify-between mt-6 pagination-container">
                     <div class="text-sm text-gray-700">
-                        Menampilkan <span class="font-medium">1</span> sampai <span class="font-medium">10</span> dari <span class="font-medium">127</span> hasil
+                        Menampilkan <span class="font-medium">{{ ($pagination['current_page'] - 1) * $pagination['per_page'] + 1 }}</span> sampai 
+                        <span class="font-medium">{{ min($pagination['current_page'] * $pagination['per_page'], $pagination['total']) }}</span> dari 
+                        <span class="font-medium">{{ $pagination['total'] }}</span> hasil
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md">1</button>
-                        <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">2</button>
-                        <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">3</button>
-                        <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                        @if ($pagination['current_page'] > 1)
+                            <a href="{{ request()->fullUrlWithQuery(['page' => $pagination['current_page'] - 1]) }}" class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @endif
+                        @for ($i = 1; $i <= $pagination['last_page']; $i++)
+                            <a href="{{ request()->fullUrlWithQuery(['page' => $i]) }}" class="px-3 py-2 text-sm font-medium {{ $pagination['current_page'] == $i ? 'text-white bg-blue-600 border border-transparent' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50' }} rounded-md">
+                                {{ $i }}
+                            </a>
+                        @endfor
+                        @if ($pagination['current_page'] < $pagination['last_page'])
+                            <a href="{{ request()->fullUrlWithQuery(['page' => $pagination['current_page'] + 1]) }}" class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
             </main>
@@ -209,66 +223,8 @@
 
     <!-- Scripts -->
     <script>
-        // Sample data - replace with actual data from your backend
-        const ordersData = [
-            {
-                id: 1,
-                invoice_number: 'INV-2024-001',
-                job_title: 'Tambal Ban Motor',
-                mitra_name: 'Setia Sukses',
-                amount: 15000,
-                admin_fee: 1500,
-                mitra_earning: 13500,
-                payment_status: 'paid',
-                payment_method: 'Dana',
-                payment_date: '2024-01-15 10:30:00',
-                transaction_reference: 'TXN123456789',
-                created_at: '2024-01-15 09:00:00'
-            },
-            {
-                id: 2,
-                invoice_number: 'INV-2024-002',
-                job_title: 'Service AC',
-                mitra_name: 'Jaya Motor',
-                amount: 75000,
-                admin_fee: 7500,
-                mitra_earning: 67500,
-                payment_status: 'pending',
-                payment_method: null,
-                payment_date: null,
-                transaction_reference: null,
-                created_at: '2024-01-16 14:20:00'
-            },
-            {
-                id: 3,
-                invoice_number: 'INV-2024-003',
-                job_title: 'Cuci Motor',
-                mitra_name: 'Mandiri Service',
-                amount: 25000,
-                admin_fee: 2500,
-                mitra_earning: 22500,
-                payment_status: 'failed',
-                payment_method: 'OVO',
-                payment_date: null,
-                transaction_reference: 'TXN987654321',
-                created_at: '2024-01-17 11:45:00'
-            },
-            {
-                id: 4,
-                invoice_number: 'INV-2024-004',
-                job_title: 'Ganti Oli',
-                mitra_name: 'Barokah Motor',
-                amount: 45000,
-                admin_fee: 4500,
-                mitra_earning: 40500,
-                payment_status: 'paid',
-                payment_method: 'GoPay',
-                payment_date: '2024-01-18 16:15:00',
-                transaction_reference: 'TXN456789123',
-                created_at: '2024-01-18 15:30:00'
-            }
-        ];
-
+        // Initial transaction data from Blade
+        let ordersData = @json($transactions);
         let currentFilter = 'all';
         let currentOrders = ordersData;
 
@@ -289,7 +245,7 @@
         }
 
         menuToggle.addEventListener('click', openSidebar);
-        closeSidebar.addEventListener('click', closeSidebarFn);
+        closeSidebar && closeSidebar.addEventListener('click', closeSidebarFn);
         overlay.addEventListener('click', closeSidebarFn);
 
         // Filter functionality
@@ -305,25 +261,28 @@
             event.target.classList.remove('bg-gray-200', 'text-gray-700');
             event.target.classList.add('bg-blue-600', 'text-white');
             
-            // Filter orders
-            if (status === 'all') {
-                currentOrders = ordersData;
-            } else {
-                currentOrders = ordersData.filter(order => order.payment_status === status);
-            }
+            // Update URL with status filter
+            const url = new URL(window.location);
+            url.searchParams.set('status', status);
+            url.searchParams.delete('page');
+            window.history.pushState({}, '', url);
             
-            renderOrders();
+            // Fetch filtered data
+            refreshData();
         }
 
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            currentOrders = ordersData.filter(order => 
-                order.invoice_number.toLowerCase().includes(searchTerm) ||
-                order.job_title.toLowerCase().includes(searchTerm) ||
-                order.mitra_name.toLowerCase().includes(searchTerm)
-            );
-            renderOrders();
+            const searchTerm = e.target.value;
+            const url = new URL(window.location);
+            if (searchTerm) {
+                url.searchParams.set('search', searchTerm);
+            } else {
+                url.searchParams.delete('search');
+            }
+            url.searchParams.delete('page');
+            window.history.pushState({}, '', url);
+            refreshData();
         });
 
         // Format currency
@@ -337,6 +296,7 @@
 
         // Format date
         function formatDate(dateString) {
+            if (!dateString) return '-';
             const date = new Date(dateString);
             return date.toLocaleDateString('id-ID', {
                 year: 'numeric',
@@ -436,79 +396,233 @@
 
         // Show order detail modal
         function showOrderDetail(orderId) {
-            const order = ordersData.find(o => o.id === orderId);
-            if (!order) return;
-            
-            const modalContent = document.getElementById('modalContent');
-            modalContent.innerHTML = `
-                <div class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">No. Invoice</label>
-                            <p class="mt-1 text-sm text-gray-900">${order.invoice_number}</p>
+            fetch(`/customer/dashboard/history/${orderId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+                .then(response => response.json())
+                .then(order => {
+                    const modalContent = document.getElementById('modalContent');
+                    modalContent.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">No. Invoice</label>
+                                    <p class="mt-1 text-sm text-gray-900">${order.invoice_number}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Status Pembayaran</label>
+                                    <div class="mt-1">${getStatusBadge(order.payment_status)}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Layanan</label>
+                                    <p class="mt-1 text-sm text-gray-900">${order.job_title}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Mitra</label>
+                                    <p class="mt-1 text-sm text-gray-900">${order.mitra_name}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Total Pembayaran</label>
+                                    <p class="mt-1 text-sm font-medium text-gray-900">${formatCurrency(order.amount)}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Biaya Admin</label>
+                                    <p class="mt-1 text-sm text-gray-900">${formatCurrency(order.admin_fee)}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Pendapatan Mitra</label>
+                                    <p class="mt-1 text-sm text-gray-900">${formatCurrency(order.mitra_earning)}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
+                                    <p class="mt-1 text-sm text-gray-900">${order.payment_method || '-'}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label>
+                                    <p class="mt-1 text-sm text-gray-900">${formatDate(order.created_at)}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Tanggal Pembayaran</label>
+                                    <p class="mt-1 text-sm text-gray-900">${formatDate(order.payment_date)}</p>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700">Referensi Transaksi</label>
+                                    <p class="mt-1 text-sm text-gray-900 font-mono">${order.transaction_reference || '-'}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                                <button onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Tutup
+                                </button>
+                                ${order.payment_status === 'paid' ? `
+                                    <button onclick="downloadInvoice(${order.id})" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                                        <i class="fas fa-download mr-1"></i> Download Invoice
+                                    </button>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Status Pembayaran</label>
-                            <div class="mt-1">${getStatusBadge(order.payment_status)}</div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Layanan</label>
-                            <p class="mt-1 text-sm text-gray-900">${order.job_title}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Mitra</label>
-                            <p class="mt-1 text-sm text-gray-900">${order.mitra_name}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Total Pembayaran</label>
-                            <p class="mt-1 text-sm font-medium text-gray-900">${formatCurrency(order.amount)}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Biaya Admin</label>
-                            <p class="mt-1 text-sm text-gray-900">${formatCurrency(order.admin_fee)}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Pendapatan Mitra</label>
-                            <p class="mt-1 text-sm text-gray-900">${formatCurrency(order.mitra_earning)}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
-                            <p class="mt-1 text-sm text-gray-900">${order.payment_method || '-'}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label>
-                            <p class="mt-1 text-sm text-gray-900">${formatDate(order.created_at)}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Tanggal Pembayaran</label>
-                            <p class="mt-1 text-sm text-gray-900">${order.payment_date ? formatDate(order.payment_date) : '-'}</p>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Referensi Transaksi</label>
-                            <p class="mt-1 text-sm text-gray-900 font-mono">${order.transaction_reference || '-'}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                        <button onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                            Tutup
-                        </button>
-                        ${order.payment_status === 'paid' ? `
-                            <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
-                                <i class="fas fa-download mr-1"></i> Download Invoice
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('orderModal').classList.remove('hidden');
+                    `;
+                    document.getElementById('orderModal').classList.remove('hidden');
+                })
+                .catch(error => console.error('Error fetching order details:', error));
         }
 
         // Close modal
         function closeModal() {
             document.getElementById('orderModal').classList.add('hidden');
         }
+
+        // Download invoice
+        function downloadInvoice(orderId) {
+            fetch(`/customer/dashboard/history/${orderId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+                .then(response => response.json())
+                .then(order => {
+                    const invoiceContent = `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <h1 style="color: #0B2F57; margin-bottom: 5px;">YukKerja</h1>
+                                <h2 style="color: #666; margin-top: 0;">Invoice</h2>
+                            </div>
+                            
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <strong>No. Invoice:</strong>
+                                    <span>${order.invoice_number}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <strong>Tanggal:</strong>
+                                    <span>${formatDate(order.created_at)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <strong>Status:</strong>
+                                    <span style="color: #28a745; font-weight: bold;">${order.payment_status.toUpperCase()}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <h3 style="color: #0B2F57; border-bottom: 2px solid #0B2F57; padding-bottom: 5px;">Detail Layanan</h3>
+                                <div style="padding: 10px 0;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Layanan:</span>
+                                        <span>${order.job_title}</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Mitra:</span>
+                                        <span>${order.mitra_name}</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Metode Pembayaran:</span>
+                                        <span>${order.payment_method || '-'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="border-top: 2px solid #0B2F57; padding-top: 15px;">
+                                <h3 style="color: #0B2F57; margin-bottom: 15px;">Rincian Pembayaran</h3>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>Subtotal:</span>
+                                    <span>${formatCurrency(order.mitra_earning)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>Biaya Admin:</span>
+                                    <span>${formatCurrency(order.admin_fee)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; padding-top: 10px; border-top: 1px solid #ddd;">
+                                    <span>Total:</span>
+                                    <span style="color: #0B2F57;">${formatCurrency(order.amount)}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;">
+                                <p>Terima kasih telah menggunakan layanan YukKerja!</p>
+                                <p>Invoice ini dibuat secara otomatis dan sah tanpa tanda tangan.</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Invoice ${order.invoice_number}</title>
+                            <style>
+                                @media print {
+                                    body { margin: 0; }
+                                    .no-print { display: none !important; }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${invoiceContent}
+                            <div class="no-print" style="text-align: center; margin-top: 20px;">
+                                <button onclick="window.print()" style="background: #0B2F57; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                                    Print Invoice
+                                </button>
+                                <button onclick="window.close()" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                                    Close
+                                </button>
+                            </div>
+                        </body>
+                        </html>
+                    `);
+                    printWindow.document.close();
+                });
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const search = document.getElementById('searchInput').value;
+            const status = currentFilter;
+            const url = `/customer/dashboard/history/export?status=${status}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            window.location.href = url;
+        }
+
+        // Refresh data
+        function refreshData() {
+            const url = new URL(window.location);
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    ordersData = data.transactions;
+                    currentOrders = ordersData;
+                    renderOrders();
+                    
+                    // Update stats
+                    document.querySelector('.stats-total').textContent = data.stats.total;
+                    document.querySelector('.stats-completed').textContent = data.stats.completed;
+                    document.querySelector('.stats-pending').textContent = data.stats.pending;
+                    document.querySelector('.stats-failed').textContent = data.stats.failed;
+                    
+                    // Show success message
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                    successMsg.innerHTML = '<i class="fas fa-check mr-2"></i>Data berhasil diperbarui';
+                    document.body.appendChild(successMsg);
+                    
+                    setTimeout(() => {
+                        successMsg.remove();
+                    }, 3000);
+                })
+                .catch(error => console.error('Error refreshing data:', error));
+        }
+
+        // Add refresh button listener
+        document.getElementById('refreshBtn').addEventListener('click', refreshData);
 
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -517,7 +631,7 @@
             }
         });
 
-        // Close sidebar on escape key
+        // Close sidebar/modal on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
@@ -536,197 +650,16 @@
             }
         });
 
-        // Download invoice function
-        function downloadInvoice(orderId) {
-            const order = ordersData.find(o => o.id === orderId);
-            if (!order) return;
-            
-            // Create a simple invoice content
-            const invoiceContent = `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #0B2F57; margin-bottom: 5px;">YukKerja</h1>
-                        <h2 style="color: #666; margin-top: 0;">Invoice</h2>
-                    </div>
-                    
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <strong>No. Invoice:</strong>
-                            <span>${order.invoice_number}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <strong>Tanggal:</strong>
-                            <span>${formatDate(order.created_at)}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <strong>Status:</strong>
-                            <span style="color: #28a745; font-weight: bold;">${order.payment_status.toUpperCase()}</span>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h3 style="color: #0B2F57; border-bottom: 2px solid #0B2F57; padding-bottom: 5px;">Detail Layanan</h3>
-                        <div style="padding: 10px 0;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <span>Layanan:</span>
-                                <span>${order.job_title}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <span>Mitra:</span>
-                                <span>${order.mitra_name}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <span>Metode Pembayaran:</span>
-                                <span>${order.payment_method || '-'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="border-top: 2px solid #0B2F57; padding-top: 15px;">
-                        <h3 style="color: #0B2F57; margin-bottom: 15px;">Rincian Pembayaran</h3>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>Subtotal:</span>
-                            <span>${formatCurrency(order.mitra_earning)}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>Biaya Admin:</span>
-                            <span>${formatCurrency(order.admin_fee)}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; padding-top: 10px; border-top: 1px solid #ddd;">
-                            <span>Total:</span>
-                            <span style="color: #0B2F57;">${formatCurrency(order.amount)}</span>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;">
-                        <p>Terima kasih telah menggunakan layanan YukKerja!</p>
-                        <p>Invoice ini dibuat secara otomatis dan sah tanpa tanda tangan.</p>
-                    </div>
-                </div>
-            `;
-            
-            // Create a new window for printing
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Invoice ${order.invoice_number}</title>
-                    <style>
-                        @media print {
-                            body { margin: 0; }
-                            .no-print { display: none !important; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    ${invoiceContent}
-                    <div class="no-print" style="text-align: center; margin-top: 20px;">
-                        <button onclick="window.print()" style="background: #0B2F57; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
-                            Print Invoice
-                        </button>
-                        <button onclick="window.close()" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                            Close
-                        </button>
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
-
-        // Export to CSV function
-        function exportToCSV() {
-            const headers = ['No Invoice', 'Layanan', 'Mitra', 'Total', 'Biaya Admin', 'Pendapatan Mitra', 'Status', 'Metode Pembayaran', 'Tanggal Pesanan', 'Tanggal Pembayaran', 'Referensi Transaksi'];
-            
-            const csvContent = [
-                headers.join(','),
-                ...currentOrders.map(order => [
-                    order.invoice_number,
-                    `"${order.job_title}"`,
-                    `"${order.mitra_name}"`,
-                    order.amount,
-                    order.admin_fee,
-                    order.mitra_earning,
-                    order.payment_status,
-                    order.payment_method || '',
-                    order.created_at,
-                    order.payment_date || '',
-                    order.transaction_reference || ''
-                ].join(','))
-            ].join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `order_history_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Add export button functionality
-        function addExportButton() {
-            const headerDiv = document.querySelector('.flex.flex-col.sm\\:flex-row.justify-between.items-start.sm\\:items-center.mb-6');
-            const filterDiv = headerDiv.querySelector('.flex.flex-wrap.gap-2');
-            
-            const exportBtn = document.createElement('button');
-            exportBtn.onclick = exportToCSV;
-            exportBtn.className = 'bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors duration-200';
-            exportBtn.innerHTML = '<i class="fas fa-download mr-1"></i> Export CSV';
-            
-            filterDiv.appendChild(exportBtn);
-        }
-
-        // Initialize the page
-        function initializePage() {
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
             renderOrders();
-            addExportButton();
-        }
-
-        // Call initialization when page loads
-        document.addEventListener('DOMContentLoaded', initializePage);
-
-        // Refresh data function (for real implementation)
-        function refreshData() {
-            // This would typically fetch data from your API
-            // For demo purposes, we'll just re-render existing data
-            renderOrders();
-            
-            // Show a success message
-            const successMsg = document.createElement('div');
-            successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-            successMsg.innerHTML = '<i class="fas fa-check mr-2"></i>Data berhasil diperbarui';
-            document.body.appendChild(successMsg);
-            
-            setTimeout(() => {
-                successMsg.remove();
-            }, 3000);
-        }
-
-        // Add refresh button
-        function addRefreshButton() {
-            const searchDiv = document.querySelector('.flex-grow.mx-2.md\\:mx-4.max-w-xl.relative');
-            const refreshBtn = document.createElement('button');
-            refreshBtn.onclick = refreshData;
-            refreshBtn.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600';
-            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-            refreshBtn.title = 'Refresh data';
-            
-            searchDiv.appendChild(refreshBtn);
-        }
-
-        // Enhanced initialization
-        function enhancedInitialization() {
-            renderOrders();
-            addExportButton();
-            addRefreshButton();
-        }
-
-        // Update the DOMContentLoaded event
-        document.addEventListener('DOMContentLoaded', enhancedInitialization);
+            // Set initial filter based on URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status') || 'all';
+            const search = urlParams.get('search') || '';
+            if (search) document.getElementById('searchInput').value = search;
+            document.querySelector(`button[onclick="filterOrders('${status}')"]`)?.click();
+        });
     </script>
 </body>
 </html>

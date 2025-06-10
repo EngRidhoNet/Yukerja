@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\JobPost;
 use App\Models\Notification;
 use App\Models\ServiceCategory;
+use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,11 +25,13 @@ class JobHistoryController extends Controller
         $categories = ServiceCategory::where('is_active', true)->get();
 
         // Build job history query
-        $query = JobPost::where('status', 'completed')
-            ->whereHas('transaction', function ($q) use ($mitra) {
-                $q->where('mitra_id', $mitra->id);
+        $query = JobPost::whereHas('applications', function ($q) use ($mitra) {
+                $q->where('mitra_id', $mitra->id)
+                  ->where('status', 'pending');
             })
-            ->with(['serviceCategory', 'reviews', 'transaction']);
+            ->with(['serviceCategory', 'reviews', 'applications' => function ($q) use ($mitra) {
+                $q->where('mitra_id', $mitra->id)->where('status', 'accepted');
+            }]);
 
         // Apply filters
         if ($request->filled('category')) {
@@ -52,7 +54,10 @@ class JobHistoryController extends Controller
         $sort = $request->input('sort', 'scheduled_date');
         $direction = $request->input('direction', 'desc');
         if ($sort === 'budget') {
-            $query->orderBy('budget', $direction);
+            $query->join('job_applications', 'job_posts.id', '=', 'job_applications.job_post_id')
+                  ->where('job_applications.mitra_id', $mitra->id)
+                  ->where('job_applications.status', 'accepted')
+                  ->orderBy('job_applications.bid_amount', $direction);
         } elseif ($sort === 'rating') {
             $query->leftJoin('reviews', 'job_posts.id', '=', 'reviews.job_post_id')
                   ->groupBy('job_posts.id')
