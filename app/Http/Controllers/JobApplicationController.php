@@ -55,6 +55,7 @@ class JobApplicationController extends Controller
                         'estimated_completion_time' => $app->estimated_completion_time,
                         'mitra' => [
                             // Gunakan optional() + null coalescing operator (??) untuk fallback
+                            'id' => optional($mitraUser)->id ?? null,
                             'name' => optional($mitraUser)->name ?? 'Mitra Tidak Ditemukan',
                             'profile_photo_url' => optional($mitraUser)->profile_photo_url ?? null,
     

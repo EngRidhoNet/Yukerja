@@ -114,7 +114,8 @@
                             </div>
                             <div class="text-sm text-gray-500 mb-3">Mulai dari Rp {{ number_format(10000 + ($mitra->id * 5000), 0, ',', '.') }}</div>
                             <div class="flex space-x-2">
-                                <button class="bg-blue-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 flex-1">Chat</button>
+                                <!-- Chat Button: Redirect to Chatify with user_id -->
+                                <a href="{{ url('/chatify/' . $mitra->user->id) }}" class="bg-blue-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 flex-1 text-center">Chat</a>
                                 <button class="bg-yellow-400 text-black text-xs md:text-sm px-3 py-2 rounded-md hover:bg-yellow-500 transition-colors duration-200 flex-1">Pesan</button>
                                 <button class="bg-green-600 text-white text-xs md:text-sm px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-200 flex-1 detail-mitra" data-id="{{ $mitra->id }}">Detail Mitra</button>
                             </div>

@@ -381,6 +381,7 @@
             `;
                 } else {
                     data.applications.forEach(app => {
+                        // **PENYESUAIAN DIMULAI DI SINI**
                         const applicationCard = `
                     <div class="proposal-card bg-gray-50 rounded-xl p-6" data-status="${app.status}" data-id="${app.id}">
                         <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-4">
@@ -413,11 +414,11 @@
                             <h4 class="font-semibold text-gray-800 mb-2">Pesan:</h4>
                             <p class="text-gray-600 text-sm">${app.message || 'Tidak ada pesan tambahan.'}</p>
                         </div>
-                        ${app.status === 'accepted' || app.status === 'completed' ? `
+                        ${app.status === 'completed' || app.status === 'in_progress' ? `
                             <div class="mb-4">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-sm font-medium text-gray-700">Progress</span>
-                                    <span class="text-sm text-gray-600">${app.status === 'completed' ? '100%' : '75%'}</span>
+                                    <span class="text-sm text-gray-600">${app.status === 'completed' ? '100%' : 'In Progress'}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
                                     <div class="bg-${app.status === 'completed' ? 'purple' : 'green'}-600 h-2 rounded-full" style="width: ${app.status === 'completed' ? '100%' : '75%'}"></div>
@@ -438,16 +439,13 @@
                                         <i class="fas fa-times mr-2"></i>Tolak Penawaran
                                     </button>
                                 </form>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                                <a href="/chatify/${app.mitra.id}" class="flex-1 text-center border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                                     <i class="fas fa-comments mr-2"></i>Chat Mitra
-                                </button>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-eye mr-2"></i>Lihat Detail
-                                </button>
-                            ` : app.status === 'accepted' ? `
-                                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                                </a>
+                            ` : app.status === 'accepted' || app.status === 'in_progress' ? `
+                                <a href="/chatify/${app.mitra.id}" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                                     <i class="fas fa-comments mr-2"></i>Chat Mitra
-                                </button>
+                                </a>
                                 <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                                     <i class="fas fa-eye mr-2"></i>Lihat Progress
                                 </button>
@@ -461,13 +459,13 @@
                                 <button class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                                     <i class="fas fa-redo mr-2"></i>Pesan Lagi
                                 </button>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-download mr-2"></i>Download Report
-                                </button>
+                                <a href="/chatify/${app.mitra.id}" class="flex-1 text-center border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                                    <i class="fas fa-comments mr-2"></i>Lihat Riwayat Chat
+                                </a>
                             ` : `
-                                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                                <a href="/chatify/${app.mitra.id}" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                                     <i class="fas fa-comments mr-2"></i>Chat Mitra
-                                </button>
+                                </a>
                                 <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                                     <i class="fas fa-eye mr-2"></i>Lihat Detail
                                 </button>
@@ -475,6 +473,7 @@
                         </div>
                     </div>
                 `;
+                        // **PENYESUAIAN BERAKHIR DI SINI**
                         applicationsList.insertAdjacentHTML('beforeend', applicationCard);
                     });
                 }

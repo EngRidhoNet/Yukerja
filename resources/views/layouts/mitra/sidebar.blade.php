@@ -65,6 +65,18 @@
             </svg>
             <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Manajemen Area Layanan</span>
         </a>
+        <a href="{{ url('/chatify')}}"
+            class="flex items-center px-6 py-3 transition-colors"
+            x-bind:class="{ 
+                 'bg-blue-700': '{{ request()->is('chatify*') }}',
+                 'hover:bg-blue-800': !'{{ request()->is('chatify*') }}',
+                 'justify-center': sidebarCollapsed && !isMobile 
+            }">
+             <svg class="h-5 w-5" x-bind:class="{ 'mr-3': !sidebarCollapsed || isMobile }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6m-6 4h8M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+             </svg>
+             <span x-show="!sidebarCollapsed || isMobile" class="text-sm font-medium">Chat</span>
+        </a>
         <form action="{{ route('logout') }}" method="POST" class="flex items-center px-6 py-3 transition-colors cursor-pointer"
               x-bind:class="{ 
                   'justify-center': sidebarCollapsed && !isMobile 

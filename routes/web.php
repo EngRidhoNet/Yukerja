@@ -15,8 +15,9 @@ use App\Http\Controllers\{
     JobApplicationController,
     JobPostController,
     TransactionController
-
 };
+
+use Chatify\Http\Controllers\MessagesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,12 @@ use App\Http\Controllers\{
 | - Layanan
 | - Testing/Slicing
 */
+
+// ==============================
+// Chatify Routes
+// ==============================
+
+
 
 // ==============================
 // Landing Page & Public Pages

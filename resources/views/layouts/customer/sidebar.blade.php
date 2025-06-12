@@ -30,6 +30,11 @@
                     <i class="fas fa-history mr-3"></i> Order History
                 </a>
             </li>
+            <li>
+                <a href="{{ url('/chatify') }}" class="flex items-center px-4 py-3 hover:bg-opacity-10 hover:bg-white transition-colors duration-200 {{ request()->is('chatify*') ? 'border-r-4 border-blue-400 bg-white bg-opacity-10' : '' }}">
+                    <i class="fas fa-comments mr-3"></i> Chat
+                </a>
+            </li>
             <li class="mt-8 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
