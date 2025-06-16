@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MitraTransactionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AuthController,
@@ -106,6 +107,8 @@ Route::middleware(['auth', 'role:mitra'])->prefix('mitra/dashboard')->group(func
     Route::get('/area/districts/{cityId}', [ServiceAreaController::class, 'getDistricts'])->name('mitra.area.districts');
     Route::get('/area/search-location', [ServiceAreaController::class, 'searchLocation'])->name('mitra.area.search-location');
     
+    Route::get('/transactions', [MitraTransactionController::class, 'index'])->name('mitra.dashboard.transactions');
+    Route::get('/transactions/{id}', [MitraTransactionController::class, 'show'])->name('mitra.dashboard.transaction.show');
     // Penawaran
     Route::view('/penawaran', 'mitra.penawaran')->name('mitra.dashboard.penawaran');
     
