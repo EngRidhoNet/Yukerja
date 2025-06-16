@@ -69,7 +69,8 @@ Route::post('auth/register/mitra', [MitraAuthController::class, 'register'])->na
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardCustomerController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/mitra/{id}', [DashboardCustomerController::class, 'show'])->name('dashboard.mitra.show');
+    Route::get('/dashboard/mitra/{id}', [DashboardCustomerController::class, 'show'])->name('mitra.show');
+    Route::get('/mitra/category/{categoryId}', [DashboardCustomerController::class, 'getMitrasByCategory'])->name('mitra.category');
 
     // Job Posts
     Route::get('/dashboard/post-job', [JobPostController::class, 'create'])->name('dashboard.post-job');
@@ -78,9 +79,11 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     // Job Applications (Penawaran)
     Route::get('/dashboard/penawaran', [JobApplicationController::class, 'index'])->name('dashboard.penawaran');
     Route::get('/jobs/{jobPost}/applications', [JobApplicationController::class, 'getApplications'])->name('dashboard.applications.get');
+    Route::post('/applications/{application}/deal', [JobApplicationController::class, 'deal'])->name('dashboard.applications.deal');
     Route::post('/applications/{application}/accept', [JobApplicationController::class, 'accept'])->name('dashboard.applications.accept');
     Route::post('/applications/{application}/reject', [JobApplicationController::class, 'reject'])->name('dashboard.applications.reject');
     Route::post('/applications/{application}/rate', [JobApplicationController::class, 'rate'])->name('dashboard.applications.rate');
+    Route::post('/applications/{application}/delete', [JobApplicationController::class, 'delete'])->name('dashboard.applications.delete');
 
     // Order History
     Route::get('/dashboard/history', [TransactionController::class, 'index'])->name('dashboard.history');

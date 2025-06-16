@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->float('latitude')->nullable();
             $table->float('longitude')->nullable();
-            $table->string('service_category')->nullable();
+            $table->foreignId('service_category_id')->nullable()->constrained('service_categories')->onDelete('cascade');
             $table->string('service_area')->nullable();
             $table->string('profile_photo')->nullable();
             $table->string('cover_photo')->nullable();

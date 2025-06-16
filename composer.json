@@ -7,8 +7,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "dotswan/filament-map-picker": "^1.8",
         "filament/filament": "^3.3",
         "filament/widgets": "^3.3",
+        "humaidem/filament-map-picker": "^0.1.5",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",

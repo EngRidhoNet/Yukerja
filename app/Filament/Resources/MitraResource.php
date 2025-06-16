@@ -11,13 +11,13 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
+use Humaidem\FilamentMapPicker\Fields\OSMMap;
 
 class MitraResource extends Resource
 {
@@ -59,10 +59,12 @@ class MitraResource extends Resource
                         
                         Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('service_category')
+                                Forms\Components\Select::make('service_category_id')
                                     ->label('Kategori Layanan')
+                                    ->relationship('serviceCategory', 'name')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->searchable()
+                                    ->preload(),
                                 
                                 Forms\Components\TagsInput::make('service_area')
                                     ->label('Area Layanan')
@@ -74,19 +76,38 @@ class MitraResource extends Resource
 
                 Section::make('Lokasi')
                     ->schema([
+                        OSMMap::make('location')
+                            ->label('Pilih Lokasi')
+                            ->showMarker()
+                            ->draggable()
+                            ->extraControl([
+                                'zoomDelta' => 1,
+                                'zoomSnap' => 0.25,
+                                'wheelPxPerZoomLevel' => 60
+                            ])
+                            ->tilesUrl('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $set('latitude', $state['lat']);
+                                $set('longitude', $state['lng']);
+                            })
+                            ->extraAttributes(['class' => 'h-[400px]'])
+                            ->columnSpanFull(),
+                        
                         Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('latitude')
                                     ->label('Latitude')
                                     ->numeric()
                                     ->step(0.000001)
-                                    ->placeholder('Contoh: -7.250445'),
+                                    ->placeholder('Contoh: -7.250445')
+                                    ->reactive(),
                                 
                                 Forms\Components\TextInput::make('longitude')
                                     ->label('Longitude')
                                     ->numeric()
                                     ->step(0.000001)
-                                    ->placeholder('Contoh: 112.768845'),
+                                    ->placeholder('Contoh: 112.768845')
+                                    ->reactive(),
                             ]),
                     ]),
 
@@ -115,32 +136,6 @@ class MitraResource extends Resource
                         Forms\Components\Toggle::make('is_verified')
                             ->label('Terverifikasi')
                             ->helperText('Centang jika mitra sudah terverifikasi'),
-                        
-                        Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('identity_card_number')
-                                    ->label('Nomor KTP')
-                                    ->maxLength(255),
-                                
-                                Forms\Components\FileUpload::make('identity_card_photo')
-                                    ->label('Foto KTP')
-                                    ->image()
-                                    ->directory('mitra/identity')
-                                    ->visibility('private'),
-                            ]),
-                        
-                        Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('business_license_number')
-                                    ->label('Nomor Izin Usaha')
-                                    ->maxLength(255),
-                                
-                                Forms\Components\FileUpload::make('business_license_photo')
-                                    ->label('Foto Izin Usaha')
-                                    ->image()
-                                    ->directory('mitra/license')
-                                    ->visibility('private'),
-                            ]),
                     ]),
 
                 Section::make('Statistik')
@@ -184,7 +179,7 @@ class MitraResource extends Resource
                     ->searchable()
                     ->sortable(),
                 
-                Tables\Columns\TextColumn::make('service_category')
+                Tables\Columns\TextColumn::make('serviceCategory.name')
                     ->label('Kategori')
                     ->searchable()
                     ->badge(),
@@ -196,7 +191,7 @@ class MitraResource extends Resource
                             return implode(', ', array_slice($state, 0, 2)) . 
                                    (count($state) > 2 ? ' +' . (count($state) - 2) : '');
                         }
-                        return $state;
+                        return $state ?? '-';
                     })
                     ->wrap(),
                 
@@ -231,16 +226,11 @@ class MitraResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('service_category')
+                SelectFilter::make('service_category_id')
                     ->label('Kategori Layanan')
-                    ->options([
-                        'cleaning' => 'Cleaning',
-                        'repair' => 'Repair',
-                        'gardening' => 'Gardening',
-                        'plumbing' => 'Plumbing',
-                        'electrical' => 'Electrical',
-                        'painting' => 'Painting',
-                    ]),
+                    ->relationship('serviceCategory', 'name')
+                    ->searchable()
+                    ->preload(),
                 
                 TernaryFilter::make('is_verified')
                     ->label('Status Verifikasi')
@@ -277,13 +267,11 @@ class MitraResource extends Resource
             ->defaultSort('created_at', 'desc');
     }
 
-
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListMitras::route('/'),
             'create' => Pages\CreateMitra::route('/create'),
-            // 'view' => Pages\ViewMitra::route('/{record}'),
             'edit' => Pages\EditMitra::route('/{record}/edit'),
         ];
     }

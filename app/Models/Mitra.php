@@ -15,15 +15,11 @@ class Mitra extends Model
         'description',
         'latitude',
         'longitude',
-        'service_category',
+        'service_category_id',
         'service_area',
         'profile_photo',
         'cover_photo',
         'is_verified',
-        'identity_card_number',
-        'identity_card_photo',
-        'business_license_number',
-        'business_license_photo',
         'avg_rating',
         'completed_jobs',
     ];
@@ -44,5 +40,14 @@ class Mitra extends Model
     public function portfolio()
     {
         return $this->hasMany(MitraPortfolio::class);
+    }
+
+    public function serviceCategory()
+    {
+        return $this->belongsTo(ServiceCategory::class);
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }
