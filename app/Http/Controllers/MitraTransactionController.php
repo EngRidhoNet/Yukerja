@@ -66,12 +66,25 @@ class MitraTransactionController extends Controller
 
     public function show($id)
     {
-        $mitraId = Auth::guard('mitra')->user()->id;
-        $transaction = Transaction::where('mitra_id', $mitraId)
-            ->with(['jobPost', 'customer'])
-            ->findOrFail($id);
-        $notifications = \App\Models\Notification::where('user_id', Auth::guard('mitra')->user()->id)->latest()->get(); // Fetch notifications
-
-        return view('mitra.show', compact('transaction', 'notifications'));
+        try {
+            $transaction = Transaction::with(['jobPost', 'customer'])
+                ->where('mitra_id', auth()->user()->mitra->id)
+                ->findOrFail($id);
+                
+            return response()->json([
+                'invoice_number' => $transaction->invoice_number,
+                'job_title' => $transaction->jobPost->title,
+                'customer_name' => $transaction->customer->name,
+                'amount' => number_format($transaction->amount, 0, ',', '.'),
+                'admin_fee' => number_format($transaction->admin_fee, 0, ',', '.'),
+                'mitra_earning' => number_format($transaction->mitra_earning, 0, ',', '.'),
+                'payment_status' => $transaction->payment_status,
+                'payment_method' => $transaction->payment_method,
+                'payment_date' => \Carbon\Carbon::parse($transaction->payment_date)->translatedFormat('l, d M Y • H:i'),
+                'transaction_reference' => $transaction->transaction_reference
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Transaction not found'], 404);
+        }
     }
 }

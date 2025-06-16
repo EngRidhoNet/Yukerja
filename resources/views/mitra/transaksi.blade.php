@@ -88,12 +88,12 @@
             this.loading = true;
             this.showTransactionModal = true;
             try {
-                const response = await fetch('{{ url('/mitra/dashboard/transactions') }}/' + transactionId);
+                const response = await fetch(`{{ route('mitra.dashboard.transactions') }}/${transactionId}/detail`);
                 if (!response.ok) throw new Error('Failed to fetch transaction details');
                 this.transactionDetails = await response.json();
             } catch (error) {
                 console.error(error);
-                this.transactionDetails = { error: 'Failed to load transaction details' };
+                this.transactionDetails = { error: 'Gagal memuat detail transaksi. Silakan coba lagi.' };
             } finally {
                 this.loading = false;
             }

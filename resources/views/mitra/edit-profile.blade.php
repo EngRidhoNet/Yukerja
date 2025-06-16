@@ -83,85 +83,26 @@
     </style>
 </head>
 
-<body class="bg-gray-50 font-sans antialiased text-gray-900">
-    <div x-data="{ 
-        sidebarOpen: true,
-        sidebarCollapsed: window.innerWidth < 1280 ? true : false,
-        isMobile: window.innerWidth < 1024,
-        showTutorial: !localStorage.getItem('sidebarTutorialShown'),
-        skills: @json($skills ?? []),
-        showPortfolioModal: false,
-        showNotifications: false,
-        showProfileMenu: false,
-        skillIndex: {{ count($skills) }},
-        initSwipeGestures() {
-            const mainContent = document.querySelector('#main-content');
-            const hammer = new Hammer(mainContent);
-            hammer.on('swiperight', () => {
-                if (this.isMobile && !this.sidebarOpen) {
-                    this.sidebarOpen = true;
-                }
-            });
-            hammer.on('swipeleft', () => {
-                if (this.isMobile && this.sidebarOpen) {
-                    this.sidebarOpen = false;
-                }
-            });
-        },
-        setMobileState() {
-            this.isMobile = window.innerWidth < 1024;
-            if (this.isMobile) {
-                this.sidebarOpen = false;
-            } else {
-                this.sidebarOpen = true;
-            }
-        },
-        toggleSidebar() {
-            if (this.isMobile) {
-                this.sidebarOpen = !this.sidebarOpen;
-            } else {
-                this.sidebarCollapsed = !this.sidebarCollapsed;
-            }
-        },
-        closeTutorial() {
-            this.showTutorial = false;
-            localStorage.setItem('sidebarTutorialShown', true);
-        },
-        addSkill() {
-            const newSkill = {
-                skill_name: '',
-                experience_years: '',
-                certification: ''
-            };
-            this.skills.push(newSkill);
-            this.skillIndex++;
-        },
-        removeSkill(index) {
-            this.skills.splice(index, 1);
-        },
-        togglePortfolioModal() {
-            this.showPortfolioModal = !this.showPortfolioModal;
-        }
-    }" x-init="
-        initSwipeGestures(); 
-        setMobileState();
-        window.addEventListener('resize', () => setMobileState());
-        if(showTutorial) {
-            setTimeout(() => closeTutorial(), 5000);
-        }
-    " class="flex h-screen overflow-hidden">
+<body class="bg-gray-50 font-sans antialiased text-gray-900" 
+    x-data="mitraProfile()" 
+    x-init="init()"
+    x-cloak>
 
+    <div class="flex h-screen overflow-hidden">
         <!-- Mobile Sidebar Overlay -->
         <div x-show="sidebarOpen && isMobile" @click="sidebarOpen = false"
             class="fixed inset-0 z-20 bg-black bg-opacity-60 lg:hidden"
             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300"
-            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak></div>
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
 
         @include('layouts.mitra.sidebar')
 
         <div id="main-content" class="flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out"
-            x-bind:class="{ 'lg:ml-200': !sidebarCollapsed && !isMobile, 'lg:ml-200': sidebarCollapsed && !isMobile }">
+            :class="{
+                'lg:ml-200': !sidebarCollapsed && !isMobile, 
+                'lg:ml-200': sidebarCollapsed && !isMobile
+            }">
             
             <!-- Header -->
             <header class="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b">
@@ -179,10 +120,9 @@
                 </div>
 
                 <!-- Notification & Profile Menu -->
-                <!-- ...existing notification and profile menu code... -->
                 <div class="flex items-center space-x-4">
                     <!-- Notification dropdown -->
-                    <div x-data="{ showNotifications: false }" class="relative">
+                    <div class="relative">
                         <button @click="showNotifications = !showNotifications" aria-label="Notifications"
                             class="flex items-center text-gray-600 hover:text-gray-900 focus:outline-none">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -193,11 +133,10 @@
                                 {{ isset($notifications) ? $notifications->count() : 0 }}
                             </span>
                         </button>
-                        <!-- Notification dropdown content ... -->
                     </div>
 
                     <!-- Profile dropdown -->
-                    <div x-data="{ showProfileMenu: false }" class="border-l pl-4 border-gray-200 relative">
+                    <div class="border-l pl-4 border-gray-200 relative">
                         <button @click="showProfileMenu = !showProfileMenu" aria-label="Profile Menu"
                             class="flex items-center focus:outline-none">
                             <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
@@ -215,7 +154,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <!-- Profile dropdown content ... -->
                     </div>
                 </div>
             </header>
@@ -333,8 +271,6 @@
                                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-
-                              
                             </div>
                         </div>
 
@@ -497,8 +433,8 @@
                 </form>
 
                 <!-- Portfolio Modal -->
-                <div x-show="showPortfolioModal"
-                    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4" x-cloak>
+                <div x-show="showPortfolioModal" x-transition.opacity
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                     <div class="bg-white rounded-lg shadow-xl w-full max-w-lg" @click.away="togglePortfolioModal()">
                         <div class="px-6 py-4 border-b">
                             <h2 class="text-lg font-semibold text-gray-800">Tambah Portofolio Baru</h2>
@@ -558,20 +494,85 @@
                         </form>
                     </div>
                 </div>
-
-                <!-- Tutorial Overlay -->
-                <!-- ...existing tutorial code... -->
             </main>
         </div>
     </div>
 
     <script>
-        function removeSkill(index) {
-            // This function is handled by Alpine.js
+        function mitraProfile() {
+            return {
+                // State
+                sidebarOpen: true,
+                sidebarCollapsed: window.innerWidth < 1280,
+                isMobile: window.innerWidth < 1024,
+                showTutorial: !localStorage.getItem('sidebarTutorialShown'),
+                showPortfolioModal: false,
+                showNotifications: false,
+                showProfileMenu: false,
+                skills: @json($skills ?? []),
+                skillIndex: {{ count($skills ?? []) }},
+
+                // Methods
+                initSwipeGestures() {
+                    const mainContent = document.querySelector('#main-content');
+                    if (mainContent) {
+                        const hammer = new Hammer(mainContent);
+                        hammer.on('swiperight', () => {
+                            if (this.isMobile && !this.sidebarOpen) {
+                                this.sidebarOpen = true;
+                            }
+                        });
+                        hammer.on('swipeleft', () => {
+                            if (this.isMobile && this.sidebarOpen) {
+                                this.sidebarOpen = false;
+                            }
+                        });
+                    }
+                },
+                setMobileState() {
+                    this.isMobile = window.innerWidth < 1024;
+                    if (this.isMobile) {
+                        this.sidebarOpen = false;
+                    } else {
+                        this.sidebarOpen = true;
+                    }
+                },
+                toggleSidebar() {
+                    if (this.isMobile) {
+                        this.sidebarOpen = !this.sidebarOpen;
+                    } else {
+                        this.sidebarCollapsed = !this.sidebarCollapsed;
+                    }
+                },
+                closeTutorial() {
+                    this.showTutorial = false;
+                    localStorage.setItem('sidebarTutorialShown', true);
+                },
+                addSkill() {
+                    this.skills.push({
+                        skill_name: '',
+                        experience_years: '',
+                        certification: ''
+                    });
+                    this.skillIndex++;
+                },
+                removeSkill(index) {
+                    this.skills.splice(index, 1);
+                },
+                togglePortfolioModal() {
+                    this.showPortfolioModal = !this.showPortfolioModal;
+                }
+            }
         }
 
-        function addSkill() {
-            // This function is handled by Alpine.js
+        function init() {
+            const app = this;
+            app.initSwipeGestures();
+            app.setMobileState();
+            window.addEventListener('resize', () => app.setMobileState());
+            if(app.showTutorial) {
+                setTimeout(() => app.closeTutorial(), 5000);
+            }
         }
     </script>
 </body>
