@@ -12,6 +12,7 @@
             <div class="hidden md:flex items-center space-x-8">
                 <a href="{{ route('main') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Home</a>
                 <a href="{{ route('about') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">About</a>
+                <a href="{{ route('mitra') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Mitra</a>
                 
                 <!-- Dropdown for Registration -->
                 <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">

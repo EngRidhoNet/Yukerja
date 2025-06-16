@@ -44,6 +44,7 @@ use Chatify\Http\Controllers\MessagesController;
 Route::view('/', 'main')->name('main');
 Route::view('/about', 'about')->name('about');
 Route::get('/service/{id}', [HomeController::class, 'serviceDetail'])->name('service.detail');
+Route::view('/mitra', 'mitra')->name('mitra');
 
 // ==============================
 // Auth Routes (Login & Logout)
