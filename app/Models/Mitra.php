@@ -42,7 +42,7 @@ class Mitra extends Model
         return $this->hasMany(MitraSkill::class);
     }
 
-    public function portfolios()
+    public function portfolio()
     {
         return $this->hasMany(MitraPortfolio::class);
     }
