@@ -19,14 +19,19 @@ class Mitra extends Model
         'service_area',
         'profile_photo',
         'cover_photo',
+        'phone_number',
+        'operational_hours',
         'is_verified',
         'avg_rating',
         'completed_jobs',
     ];
 
     protected $casts = [
-        'service_area' => 'array', // Cast JSON to array
+        'service_area' => 'array',
+        'is_verified' => 'boolean',
+        'avg_rating' => 'decimal:2',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -37,7 +42,7 @@ class Mitra extends Model
         return $this->hasMany(MitraSkill::class);
     }
 
-    public function portfolio()
+    public function portfolios()
     {
         return $this->hasMany(MitraPortfolio::class);
     }
@@ -46,6 +51,7 @@ class Mitra extends Model
     {
         return $this->belongsTo(ServiceCategory::class);
     }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);

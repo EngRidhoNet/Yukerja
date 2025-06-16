@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Mitra;
 use App\Models\MitraSkill;
 use App\Models\MitraPortfolio;
+use App\Models\ServiceCategory;
 use Illuminate\Support\Facades\Storage;
 
 class MitraProfileController extends Controller
@@ -18,13 +19,14 @@ class MitraProfileController extends Controller
         $mitra = Mitra::where('user_id', $user->id)->firstOrFail();
         $skills = MitraSkill::where('mitra_id', $mitra->id)->get();
         $portfolios = MitraPortfolio::where('mitra_id', $mitra->id)->get();
+        $serviceCategories = ServiceCategory::all();
         $notifications = \App\Models\Notification::where('user_id', $user->id)
             ->where('is_read', false)
             ->latest()
             ->take(10)
-            ->get(); // Adjust based on your Notification model
+            ->get();
 
-        return view('mitra.edit-profile', compact('user', 'mitra', 'skills', 'portfolios', 'notifications'));
+        return view('mitra.edit-profile', compact('user', 'mitra', 'skills', 'portfolios', 'serviceCategories', 'notifications'));
     }
 
     public function update(Request $request)
@@ -35,9 +37,8 @@ class MitraProfileController extends Controller
         $validated = $request->validate([
             'business_name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'service_category' => 'required|string|max:255',
+            'service_category_id' => 'required|exists:service_categories,id',
             'phone_number' => 'required|string|max:20',
-            'operational_hours' => 'required|string|max:255',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'cover_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'skills.*.skill_name' => 'required|string|max:255',
@@ -64,12 +65,11 @@ class MitraProfileController extends Controller
             $mitra->cover_photo = $coverPhotoPath;
         }
 
-        $mitra->business_name = $validated['business_name'];
-        $mitra->description = $validated['description'];
-        $mitra->service_category = $validated['service_category'];
-        $mitra->phone_number = $validated['phone_number'];
-        $mitra->operational_hours = $validated['operational_hours'];
-        $mitra->save();
+        $mitra->update([
+            'business_name' => $validated['business_name'],
+            'description' => $validated['description'],
+            'service_category_id' => $validated['service_category_id'],
+        ]);
 
         if (isset($validated['skills'])) {
             MitraSkill::where('mitra_id', $mitra->id)->delete();
@@ -83,7 +83,7 @@ class MitraProfileController extends Controller
             }
         }
 
-        return redirect()->route('mitra.dashboard.edit-profile')->with('success', 'Profile updated successfully');
+        return redirect()->route('mitra.dashboard.edit-profile')->with('success', 'Profil berhasil diperbarui!');
     }
 
     public function storePortfolio(Request $request)
@@ -112,6 +112,6 @@ class MitraProfileController extends Controller
 
         MitraPortfolio::create($portfolioData);
 
-        return redirect()->route('mitra.dashboard.edit-profile')->with('success', 'Portfolio item added successfully');
+        return redirect()->route('mitra.dashboard.edit-profile')->with('success', 'Portofolio berhasil ditambahkan!');
     }
 }
