@@ -33,9 +33,27 @@
 
         .status-badge {
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .status-pending {
+        .status-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .status-badge:hover::before {
+            left: 100%;
+        }
+
+        .status-pending,
+        .status-open {
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             color: #92400e;
         }
@@ -51,8 +69,8 @@
         }
 
         .status-accepted {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #065f46;
+            background: linear-gradient(135deg, #c7f9ff 0%, #a7efff 100%);
+            color: #0369a1;
         }
 
         .status-rejected {
@@ -66,6 +84,73 @@
 
         .rating-stars {
             color: #fbbf24;
+        }
+
+        .rating-stars i {
+            transition: color 0.2s ease;
+        }
+
+        .proposal-card {
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+        }
+
+        .proposal-card:hover {
+            animation: pulse-glow 2s infinite;
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, var(--from-color), var(--to-color));
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+
+        .gradient-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-accept {
+            --from-color: #10b981;
+            --to-color: #059669;
+        }
+
+        .btn-reject {
+            --from-color: #ef4444;
+            --to-color: #dc2626;
+        }
+
+        .btn-deal {
+            --from-color: #8b5cf6;
+            --to-color: #7c3aed;
+        }
+
+        .btn-chat {
+            --from-color: #3b82f6;
+            --to-color: #2563eb;
+        }
+
+        .btn-secondary {
+            --from-color: #6b7280;
+            --to-color: #4b5563;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -86,37 +171,37 @@
                         <i class="fas fa-bars text-xl"></i>
                     </button>
 
-                    <!-- Search Bar -->
                     <div class="flex-grow mx-2 md:mx-4 max-w-xl relative">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
                         <input type="text" id="searchInput"
-                            class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
-                            placeholder="Cari pekerjaan...">
+                            class="w-full pl-10 pr-10 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+                            placeholder="Cari jasa...">
+                        <button id="refreshBtn"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
+                            title="Refresh data">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                     </div>
 
-                    <!-- Right Side Icons -->
                     <div class="flex items-center space-x-2 md:space-x-4">
                         <a href="#" class="relative">
                             <i class="fas fa-bell text-lg md:text-xl text-gray-600 hover:text-blue-600"></i>
                             <span
-                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
                         </a>
                         <div class="relative group">
                             <button class="focus:outline-none">
-                                <img src="{{ auth()->user()->profile_photo_url ?? 'https://via.placeholder.com/32/4B5563/FFFFFF?text=' . auth()->user()->name[0] }}"
+                                <img src="https://ui-avatars.com/api/?name=User&color=7F9CF5&background=EBF4FF"
                                     alt="Profile" class="rounded-full w-8 h-8">
                             </button>
                             <div
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                 <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profil</a>
-                                <a href="{{ route('customer.dashboard.history') }}"
-                                    class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Riwayat Pesanan</a>
                                 <hr>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <a href="{{ route('logout') }}"
-                                        onclick="event.preventDefault(); this.closest('form').submit();"
-                                        class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Keluar</a>
+                                    <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Keluar</button>
                                 </form>
                             </div>
                         </div>
@@ -161,7 +246,7 @@
                                         <i class="fas fa-eye mr-2"></i>Lihat Penawaran
                                     </button>
                                     <a href="{{ route('customer.dashboard.post-job') }}"
-                                        class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                                        class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center">
                                         <i class="fas fa-edit mr-2"></i>Edit Job
                                     </a>
                                 </div>
@@ -294,12 +379,18 @@
                 }
             });
 
-            if (visibleCount === 0) {
-                jobPostsList.classList.add('hidden');
-                emptyState.classList.remove('hidden');
+            if (visibleCount === 0 && searchTerm !== '') {
+                if (!jobPostsList.classList.contains('hidden')) {
+                    jobPostsList.classList.add('hidden');
+                }
+                if (emptyState && emptyState.classList.contains('hidden')) {
+                    emptyState.classList.remove('hidden');
+                }
             } else {
                 jobPostsList.classList.remove('hidden');
-                emptyState.classList.add('hidden');
+                if (emptyState && !emptyState.classList.contains('hidden')) {
+                    emptyState.classList.add('hidden');
+                }
             }
         });
 
@@ -373,108 +464,96 @@
 
                 if (data.applications.length === 0) {
                     applicationsList.innerHTML = `
-                <div class="text-center py-8">
-                    <i class="fas fa-handshake text-4xl text-gray-400 mb-4"></i>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Belum Ada Penawaran</h3>
-                    <p class="text-gray-600">Belum ada mitra yang mengajukan penawaran untuk pekerjaan ini.</p>
-                </div>
-            `;
+                        <div class="text-center py-12">
+                            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                                <i class="fas fa-handshake text-3xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Belum Ada Penawaran</h3>
+                            <p class="text-gray-600">Belum ada mitra yang mengajukan penawaran untuk pekerjaan ini.</p>
+                        </div>
+                    `;
                 } else {
                     data.applications.forEach(app => {
                         const applicationCard = `
-                    <div class="proposal-card bg-gray-50 rounded-xl p-6" data-status="${app.status}" data-id="${app.id}">
-                        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-4">
-                            <div class="flex items-start space-x-4">
-                                <img src="${app.mitra.profile_photo_url || 'https://via.placeholder.com/60/3B82F6/FFFFFF?text=' + (app.mitra.name ? app.mitra.name[0] : 'M')}" alt="Mitra" class="w-15 h-15 rounded-full border-2 border-blue-200">
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-900">${app.mitra.name || 'Mitra Tanpa Nama'}</h3>
-                                    <p class="text-sm text-gray-600 mb-1">${app.mitra.job_title || 'Mitra'}</p>
-                                    <div class="flex items-center space-x-2">
-                                        <div class="rating-stars flex">
-                                            ${[1, 2, 3, 4, 5].map(i => `
-                                                <i class="fas fa-star ${i <= (app.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}"></i>
-                                            `).join('')}
+                            <div class="proposal-card bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300" data-status="${app.status}" data-id="${app.id}">
+                                <!-- Header Section -->
+                                <div class="flex flex-col lg:flex-row lg:items-start justify-between mb-6">
+                                    <div class="flex items-start space-x-4 flex-1">
+                                        <div class="relative">
+                                            <img src="${app.mitra.profile_photo_url || 'https://via.placeholder.com/64/3B82F6/FFFFFF?text=' + (app.mitra.name ? app.mitra.name[0] : 'M')}" 
+                                                 alt="Mitra" class="w-16 h-16 rounded-full border-3 border-blue-200 shadow-lg">
+                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></div>
                                         </div>
-                                        <span class="text-sm text-gray-600">(${Number(app.rating || 0).toFixed(1)})</span>
-                                        <span class="text-sm text-gray-400">• ${app.mitra.reviews_count || 0} reviews</span>
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <h3 class="text-xl font-bold text-gray-900">${app.mitra.name || 'Mitra Tanpa Nama'}</h3>
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">Verified</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mb-2">${app.mitra.job_title || 'Professional'}</p>
+                                            <div class="flex items-center space-x-3">
+                                                <div class="rating-stars flex">
+                                                    ${[1, 2, 3, 4, 5].map(i => `
+                                                        <i class="fas fa-star text-sm ${i <= (app.mitra.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}"></i>
+                                                    `).join('')}
+                                                </div>
+                                                <span class="text-sm font-medium text-gray-700">${Number(app.mitra.rating || 0).toFixed(1)}</span>
+                                                <span class="text-sm text-gray-400">•</span>
+                                                <span class="text-sm text-gray-600">${app.mitra.reviews_count || 0} reviews</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Status & Price Section -->
+                                    <div class="mt-4 lg:mt-0 flex flex-col items-end space-y-2">
+                                        <span class="status-badge status-${app.status} px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
+                                            <i class="fas fa-${getStatusIcon(app.status)} mr-2"></i>
+                                            ${getStatusText(app.status)}
+                                        </span>
+                                        <div class="text-right">
+                                            <div class="text-3xl font-bold text-gray-900">Rp ${Number(app.bid_amount || 0).toLocaleString('id-ID')}</div>
+                                            <div class="text-sm text-gray-500">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                Estimasi ${app.estimated_completion_time ? Math.ceil((new Date(app.estimated_completion_time) - new Date()) / (1000 * 60 * 60 * 24)) : 'N/A'} hari
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="mt-4 lg:mt-0 flex flex-col items-end">
-                                <span class="status-badge status-${app.status} px-3 py-1 rounded-full text-sm font-medium mb-2">
-                                    <i class="fas fa-${app.status === 'open' ? 'clock' : app.status === 'accepted' ? 'check-circle' : app.status === 'rejected' ? 'times-circle' : 'trophy'} mr-1"></i>
-                                    ${app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                                </span>
-                                <span class="text-2xl font-bold text-gray-900">Rp ${Number(app.bid_amount || 0).toLocaleString('id-ID')}</span>
-                                <span class="text-sm text-gray-500">Estimasi ${app.estimated_completion_time ? Math.ceil((new Date(app.estimated_completion_time) - new Date()) / (1000 * 60 * 60 * 24)) : 'N/A'} hari</span>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <h4 class="font-semibold text-gray-800 mb-2">Pesan:</h4>
-                            <p class="text-gray-600 text-sm">${app.message || 'Tidak ada pesan tambahan.'}</p>
-                        </div>
-                        ${app.status === 'accepted' || app.status === 'completed' ? `
-                            <div class="mb-4">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm font-medium text-gray-700">Progress</span>
-                                    <span class="text-sm text-gray-600">${app.status === 'completed' ? '100%' : '75%'}</span>
+
+                                <!-- Message Section -->
+                                <div class="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+                                    <h4 class="font-semibold text-gray-800 mb-2">
+                                        <i class="fas fa-comment-alt mr-2 text-blue-500"></i>Pesan dari Mitra:
+                                    </h4>
+                                    <p class="text-gray-700 leading-relaxed">${app.message || 'Tidak ada pesan tambahan.'}</p>
                                 </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-${app.status === 'completed' ? 'purple' : 'green'}-600 h-2 rounded-full" style="width: ${app.status === 'completed' ? '100%' : '75%'}"></div>
+
+                                <!-- Progress Section -->
+                                ${(app.status === 'completed' || app.status === 'in_progress') ? `
+                                    <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <span class="text-sm font-semibold text-gray-700">
+                                                <i class="fas fa-tasks mr-2 text-green-600"></i>Progress Pekerjaan
+                                            </span>
+                                            <span class="text-sm font-bold text-green-600">
+                                                ${app.status === 'completed' ? '100%' : '75%'}
+                                            </span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+                                            <div class="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-1000 ease-out" 
+                                                 style="width: ${app.status === 'completed' ? '100%' : '75%'}"></div>
+                                        </div>
+                                        <div class="mt-2 text-xs text-gray-600">
+                                            ${app.status === 'completed' ? 'Pekerjaan telah selesai' : 'Sedang dalam pengerjaan'}
+                                        </div>
+                                    </div>
+                                ` : ''}
+
+                                <!-- Action Buttons -->
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    ${getActionButtons(app, csrfToken)}
                                 </div>
                             </div>
-                        ` : ''}
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            ${app.status === 'open' ? `
-                                <form action="/customer/applications/${app.id}/accept" method="POST" class="flex-1">
-                                    <input type="hidden" name="_token" value="${csrfToken}">
-                                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                        <i class="fas fa-check mr-2"></i>Terima Penawaran
-                                    </button>
-                                </form>
-                                <form action="/customer/applications/${app.id}/reject" method="POST" class="flex-1">
-                                    <input type="hidden" name="_token" value="${csrfToken}">
-                                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                        <i class="fas fa-times mr-2"></i>Tolak Penawaran
-                                    </button>
-                                </form>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-comments mr-2"></i>Chat Mitra
-                                </button>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-eye mr-2"></i>Lihat Detail
-                                </button>
-                            ` : app.status === 'accepted' ? `
-                                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-comments mr-2"></i>Chat Mitra
-                                </button>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-eye mr-2"></i>Lihat Progress
-                                </button>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-file-alt mr-2"></i>Lihat Deliverable
-                                </button>
-                            ` : app.status === 'completed' ? `
-                                <button class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200" onclick="showRatingModal(${app.id})">
-                                    <i class="fas fa-star mr-2"></i>Beri Rating
-                                </button>
-                                <button class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-redo mr-2"></i>Pesan Lagi
-                                </button>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-download mr-2"></i>Download Report
-                                </button>
-                            ` : `
-                                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-comments mr-2"></i>Chat Mitra
-                                </button>
-                                <button class="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                                    <i class="fas fa-eye mr-2"></i>Lihat Detail
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                `;
+                        `;
                         applicationsList.insertAdjacentHTML('beforeend', applicationCard);
                     });
                 }
@@ -486,8 +565,198 @@
             }
         }
 
+        function getStatusIcon(status) {
+            const icons = {
+                'open': 'clock',
+                'accepted': 'handshake',
+                'in_progress': 'spinner',
+                'completed': 'check-circle',
+                'rejected': 'times-circle'
+            };
+            return icons[status] || 'question-circle';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'open': 'Menunggu',
+                'accepted': 'Diterima',
+                'in_progress': 'Dikerjakan',
+                'completed': 'Selesai',
+                'rejected': 'Ditolak'
+            };
+            return texts[status] || 'Unknown';
+        }
+
+
+      function getActionButtons(app, csrfToken) {
+            console.log('Application status:', app.status); // Debug log
+            
+            switch(app.status) {
+                case 'open':
+                case 'pending':
+                    return `
+                        <button onclick="acceptApplication(${app.id})" 
+                                class="flex-1 gradient-btn btn-accept text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-check mr-2"></i>Terima Penawaran
+                        </button>
+                        <button onclick="rejectApplication(${app.id})" 
+                                class="flex-1 gradient-btn btn-reject text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-times mr-2"></i>Tolak Penawaran
+                        </button>
+                        <a href="/chatify/${app.mitra.id}" 
+                           class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-comments mr-2"></i>Chat Mitra
+                        </a>
+                    `;
+                    
+                case 'accepted':
+                    return `
+                        <button onclick="dealApplication(${app.id})" 
+                                class="flex-1 gradient-btn btn-deal text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-handshake mr-2"></i>Deal & Mulai Kerja
+                        </button>
+                        <a href="/chatify/${app.mitra.id}" 
+                           class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-comments mr-2"></i>Chat Mitra
+                        </a>
+                    `;
+                    
+                case 'in_progress':
+                    return `
+                        <a href="/chatify/${app.mitra.id}" 
+                           class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-comments mr-2"></i>Chat Mitra
+                        </a>
+                        <button class="flex-1 gradient-btn btn-secondary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-eye mr-2"></i>Lihat Progress
+                        </button>
+                        <button class="flex-1 gradient-btn btn-secondary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-file-alt mr-2"></i>Lihat Deliverable
+                        </button>
+                    `;
+                    
+                case 'completed':
+                    return `
+                        <button onclick="showRatingModal(${app.id})" 
+                                class="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-star mr-2"></i>Beri Rating
+                        </button>
+                        <button class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-redo mr-2"></i>Pesan Lagi
+                        </button>
+                        <a href="/chatify/${app.mitra.id}" 
+                           class="flex-1 text-center gradient-btn btn-secondary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-comments mr-2"></i>Riwayat Chat
+                        </a>
+                    `;
+                    
+                case 'rejected':
+                    return `
+                        <a href="/chatify/${app.mitra.id}" 
+                           class="flex-1 text-center gradient-btn btn-secondary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-comments mr-2"></i>Chat Mitra
+                        </a>
+                        <button class="flex-1 gradient-btn btn-secondary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg" disabled>
+                            <i class="fas fa-ban mr-2"></i>Ditolak
+                        </button>
+                         <button onclick="deleteApplication(${app.id})" 
+                                class="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-trash mr-2"></i>Hapus
+                        </button>
+                    `;
+                    
+                default:
+                    // Default case untuk status yang tidak dikenal atau null
+                    return `
+                        <button onclick="acceptApplication(${app.id})" 
+                                class="flex-1 gradient-btn btn-accept text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-check mr-2"></i>Terima Penawaran
+                        </button>
+                        <button onclick="rejectApplication(${app.id})" 
+                                class="flex-1 gradient-btn btn-reject text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-times mr-2"></i>Tolak Penawaran
+                        </button>
+                        <a href="/chatify/${app.mitra.id}" 
+                           class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                            <i class="fas fa-comments mr-2"></i>Chat Mitra
+                        </a>
+                    `;
+            }
+        }
+
+
         function closeApplicationsModal() {
             document.getElementById('applicationsModal').classList.add('hidden');
+        }
+
+        async function deleteApplication(applicationId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus penawaran ini?')) return;
+            
+            await handleApplicationAction(applicationId, 'delete', 'Menghapus penawaran...');
+        }
+
+        // New functions for handling actions
+        async function acceptApplication(applicationId) {
+            if (!confirm('Apakah Anda yakin ingin menerima penawaran ini? Transaksi akan dibuat.')) return;
+            
+            await handleApplicationAction(applicationId, 'accept', 'Menerima penawaran...');
+        }
+
+        async function rejectApplication(applicationId) {
+            if (!confirm('Apakah Anda yakin ingin menolak penawaran ini?')) return;
+            
+            await handleApplicationAction(applicationId, 'reject', 'Menolak penawaran...');
+        }
+
+        async function dealApplication(applicationId) {
+            if (!confirm('Apakah Anda yakin ingin memulai pekerjaan ini? Pembayaran akan diproses.')) return;
+            
+            await handleApplicationAction(applicationId, 'deal', 'Memproses deal...');
+        }
+
+        async function handleApplicationAction(applicationId, action, loadingMessage) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            const button = event.target.closest('button');
+            const originalContent = button.innerHTML;
+            
+            try {
+                // Show loading state
+                button.disabled = true;
+                button.innerHTML = `<div class="loading-spinner mr-2"></div>${loadingMessage}`;
+                showNotification(loadingMessage, 'info');
+                
+                const response = await fetch(`/customer/applications/${applicationId}/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    closeApplicationsModal();
+                    
+                    // Refresh the page after a short delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(data.message || `Gagal ${action} penawaran.`, 'error');
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                }
+
+            } catch (error) {
+                console.error(`Error ${action}ing application:`, error);
+                showNotification(`Terjadi kesalahan saat ${action} penawaran.`, 'error');
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
         }
 
         // Rating modal functionality
@@ -499,20 +768,27 @@
             const stars = modal.querySelectorAll('.rating-star');
             let selectedRating = 0;
 
-            stars.forEach((star, index) => {
+            // Reset previous event listeners
+            stars.forEach(star => {
+                const newStar = star.cloneNode(true);
+                star.parentNode.replaceChild(newStar, star);
+            });
+
+            const newStars = modal.querySelectorAll('.rating-star');
+            newStars.forEach((star, index) => {
                 star.addEventListener('click', () => {
                     selectedRating = index + 1;
-                    updateStarDisplay(stars, selectedRating);
+                    updateStarDisplay(newStars, selectedRating);
                     document.getElementById('ratingInput').value = selectedRating;
                 });
 
                 star.addEventListener('mouseenter', () => {
-                    updateStarDisplay(stars, index + 1);
+                    updateStarDisplay(newStars, index + 1);
                 });
             });
 
             modal.addEventListener('mouseleave', () => {
-                updateStarDisplay(stars, selectedRating);
+                updateStarDisplay(newStars, selectedRating);
             });
 
             modal.classList.remove('hidden');
@@ -545,19 +821,22 @@
         // Auto-refresh notifications
         setInterval(() => {
             const bellIcon = document.querySelector('.fa-bell');
-            const notificationBadge = bellIcon.nextElementSibling;
-            const currentCount = parseInt(notificationBadge.textContent);
+            const notificationBadge = bellIcon?.nextElementSibling;
+            
+            if (bellIcon && notificationBadge) {
+                const currentCount = parseInt(notificationBadge.textContent);
 
-            if (Math.random() < 0.1) {
-                const newCount = currentCount + 1;
-                notificationBadge.textContent = newCount;
-                notificationBadge.classList.add('animate-pulse');
+                if (Math.random() < 0.1) {
+                    const newCount = currentCount + 1;
+                    notificationBadge.textContent = newCount;
+                    notificationBadge.classList.add('animate-pulse');
 
-                setTimeout(() => {
-                    notificationBadge.classList.remove('animate-pulse');
-                }, 1000);
+                    setTimeout(() => {
+                        notificationBadge.classList.remove('animate-pulse');
+                    }, 1000);
 
-                showNotification('Penawaran baru masuk!', 'info');
+                    showNotification('Penawaran baru masuk!', 'info');
+                }
             }
         }, 10000);
     </script>

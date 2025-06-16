@@ -67,6 +67,20 @@ class TransactionController extends Controller
             ];
         });
 
+        // Handle AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'transactions' => $formattedTransactions,
+                'stats' => $stats,
+                'pagination' => [
+                    'current_page' => $transactions->currentPage(),
+                    'last_page' => $transactions->lastPage(),
+                    'total' => $transactions->total(),
+                    'per_page' => $transactions->perPage(),
+                ]
+            ]);
+        }
+
         return view('customer.order_history', [
             'transactions' => $formattedTransactions,
             'pagination' => [
@@ -81,24 +95,34 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        $transaction = Transaction::where('customer_id', Auth::user()->id)
-            ->with(['jobPost', 'mitra.user'])
-            ->findOrFail($id);
+        try {
+            $transaction = Transaction::where('customer_id', Auth::user()->id)
+                ->with(['jobPost', 'mitra.user'])
+                ->findOrFail($id);
 
-        return response()->json([
-            'id' => $transaction->id,
-            'invoice_number' => $transaction->invoice_number,
-            'job_title' => $transaction->jobPost->title ?? 'N/A',
-            'mitra_name' => $transaction->mitra->user->name ?? 'N/A',
-            'amount' => $transaction->amount,
-            'admin_fee' => $transaction->admin_fee,
-            'mitra_earning' => $transaction->mitra_earning,
-            'payment_status' => $transaction->payment_status,
-            'payment_method' => $transaction->payment_method,
-            'payment_date' => $transaction->payment_date ? $transaction->payment_date->toDateTimeString() : null,
-            'transaction_reference' => $transaction->transaction_reference,
-            'created_at' => $transaction->created_at->toDateTimeString(),
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $transaction->id,
+                    'invoice_number' => $transaction->invoice_number,
+                    'job_title' => $transaction->jobPost->title ?? 'N/A',
+                    'mitra_name' => $transaction->mitra->user->name ?? 'N/A',
+                    'amount' => $transaction->amount,
+                    'admin_fee' => $transaction->admin_fee,
+                    'mitra_earning' => $transaction->mitra_earning,
+                    'payment_status' => $transaction->payment_status,
+                    'payment_method' => $transaction->payment_method,
+                    'payment_date' => $transaction->payment_date ? $transaction->payment_date->toDateTimeString() : null,
+                    'transaction_reference' => $transaction->transaction_reference,
+                    'created_at' => $transaction->created_at->toDateTimeString(),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction not found'
+            ], 404);
+        }
     }
 
     public function export(Request $request)

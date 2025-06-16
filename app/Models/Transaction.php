@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'job_post_id',
         'customer_id',
@@ -23,7 +23,13 @@ class Transaction extends Model
         'transaction_reference',
     ];
 
-    // Relationships
+    protected $casts = [
+        'payment_date' => 'datetime',
+        'amount' => 'decimal:2',
+        'admin_fee' => 'decimal:2',
+        'mitra_earning' => 'decimal:2',
+    ];
+
     public function jobPost()
     {
         return $this->belongsTo(JobPost::class);
@@ -38,5 +44,4 @@ class Transaction extends Model
     {
         return $this->belongsTo(Mitra::class);
     }
-    
 }

@@ -212,11 +212,11 @@ class JobPostResource extends Resource
                 Tables\Actions\DeleteAction::make()
                     ->label('Hapus'),
                     
-                Action::make('viewApplications')
-                    ->label('Lihat Pelamar')
-                    ->url(fn (JobPost $record) => route('filament.admin.resources.job-applications.index', ['job_post_id' => $record->id]))
-                    ->icon('heroicon-o-user-group')
-                    ->color('success'),
+                // Action::make('viewApplications')
+                //     ->label('Lihat Pelamar')
+                //     ->url(fn (JobPost $record) => route('filament.admin.resources.job-applications.index', ['job_post_id' => $record->id]))
+                //     ->icon('heroicon-o-user-group')
+                //     ->color('success'),
             ]);
     }
 

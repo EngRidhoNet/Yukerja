@@ -15,4 +15,9 @@ class ServiceCategory extends Model
         'description',
         'is_active',
     ];
+
+    public function mitras()
+    {
+        return $this->hasMany(Mitra::class);
+    }
 }
