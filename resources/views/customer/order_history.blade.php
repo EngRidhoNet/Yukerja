@@ -55,34 +55,42 @@
             <!-- Header -->
             <header class="bg-white shadow-sm border-b border-gray-200">
                 <nav class="px-4 py-3 flex items-center justify-between">
-                    <button id="menu-toggle" class="md:hidden text-gray-600 focus:outline-none hover:text-blue-600 transition-colors">
+                    <button id="menu-toggle" class="md:hidden text-gray-600 focus:outline-none hover:text-blue-600">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
-                    
-                    <!-- Search Bar -->
+
                     <div class="flex-grow mx-2 md:mx-4 max-w-xl relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="searchInput" class="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base" placeholder="Cari riwayat pesanan...">
-                        <button id="refreshBtn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors" title="Refresh data">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" id="searchInput"
+                            class="w-full pl-10 pr-10 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+                            placeholder="Cari jasa...">
+                        <button id="refreshBtn"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
+                            title="Refresh data">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
-                    
-                    <!-- Right Side Icons -->
+
                     <div class="flex items-center space-x-2 md:space-x-4">
                         <a href="#" class="relative">
-                            <i class="fas fa-bell text-lg md:text-xl text-gray-600 hover:text-blue-600 transition-colors"></i>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">1</span>
+                            <i class="fas fa-bell text-lg md:text-xl text-gray-600 hover:text-blue-600"></i>
+                            <span
+                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
                         </a>
                         <div class="relative group">
                             <button class="focus:outline-none">
-                                <img src="https://via.placeholder.com/32/4B5563/FFFFFF?text={{ auth()->user()->name[0] }}" alt="Profile" class="rounded-full w-8 h-8 border-2 border-gray-200">
+                                <img src="https://ui-avatars.com/api/?name=User&color=7F9CF5&background=EBF4FF"
+                                    alt="Profile" class="rounded-full w-8 h-8">
                             </button>
-                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-gray-200">
-                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-50 rounded-t-lg">Profil</a>
-                                <a href="{{ route('customer.dashboard.history') }}" class="block px-4 py-2 text-gray-800 bg-blue-50 border-l-4 border-blue-500">Pesanan</a>
+                            <div
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profil</a>
                                 <hr>
-                                <a href="{{ route('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-50 rounded-b-lg">Keluar</a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Keluar</button>
+                                </form>
                             </div>
                         </div>
                     </div>

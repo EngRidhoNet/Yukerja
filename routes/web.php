@@ -99,6 +99,12 @@ Route::middleware(['auth', 'role:mitra'])->prefix('mitra/dashboard')->group(func
     Route::get('/job-terdekat', [MitraDashboardController::class, 'nearbyJobs'])->name('mitra.dashboard.job-terdekat');
     Route::get('/riwayat', [JobHistoryController::class, 'index'])->name('mitra.dashboard.riwayat');
     Route::get('/area', [ServiceAreaController::class, 'index'])->name('mitra.dashboard.area');
+    Route::post('/area/update-location', [ServiceAreaController::class, 'updateLocation'])->name('mitra.area.update-location');
+    Route::post('/area/save', [ServiceAreaController::class, 'saveServiceAreas'])->name('mitra.area.save');
+    Route::get('/area/provinces', [ServiceAreaController::class, 'getProvinces'])->name('mitra.area.provinces');
+    Route::get('/area/cities/{provinceId}', [ServiceAreaController::class, 'getCities'])->name('mitra.area.cities');
+    Route::get('/area/districts/{cityId}', [ServiceAreaController::class, 'getDistricts'])->name('mitra.area.districts');
+    Route::get('/area/search-location', [ServiceAreaController::class, 'searchLocation'])->name('mitra.area.search-location');
     
     // Penawaran
     Route::view('/penawaran', 'mitra.penawaran')->name('mitra.dashboard.penawaran');

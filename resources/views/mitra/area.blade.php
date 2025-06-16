@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Area Layanan - Yuk Kerja</title>
     <meta name="description" content="Manajemen Area Layanan Yuk Kerja">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js -->
@@ -58,6 +59,10 @@
         .leaflet-container {
             font-family: inherit;
         }
+        .search-dropdown {
+            max-height: 200px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans antialiased text-gray-900">
@@ -66,9 +71,9 @@
         setMobileState();
         window.addEventListener('resize', () => setMobileState());
         if(showTutorial) setTimeout(() => closeTutorial(), 5000);
-        // Initialize map after DOM is loaded
         setTimeout(() => initMap(), 100);
         fetchProvinces();
+        loadExistingServiceAreas();
     " class="flex h-screen overflow-hidden">
         <!-- Mobile Sidebar Overlay -->
         <div x-show="sidebarOpen && isMobile" @click="sidebarOpen = false"
@@ -150,13 +155,20 @@
                             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                             class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 dropdown-transition" x-cloak>
                             <div class="py-2 border-b">
-                                <p class="px-4 text-sm font-medium text-gray-800">User Demo</p>
-                                <p class="px-4 text-xs text-gray-500">user@example.com</p>
+                                <p class="px-4 text-sm font-medium text-gray-800">{{ Auth::user()->name ?? 'User Demo' }}</p>
+                                <p class="px-4 text-xs text-gray-500">{{ Auth::user()->email ?? 'user@example.com' }}</p>
                             </div>
                             <div class="py-1">
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
+                                @auth
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</button>
+                                </form>
+                                @else
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
+                                @endauth
                             </div>
                         </div>
                     </div>
@@ -175,6 +187,30 @@
                         <p class="text-sm text-gray-600 mt-1">Pilih lokasi Anda saat ini atau tentukan lokasi di peta</p>
                     </div>
                     <div class="p-6">
+                        <!-- Search Location -->
+                        <div class="mb-4" x-data="{ searchQuery: '', searchResults: [], isSearching: false }">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Cari Lokasi</label>
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    x-model="searchQuery"
+                                    @input="searchLocation(searchQuery)"
+                                    placeholder="Cari alamat atau tempat..."
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                <div x-show="searchResults.length > 0" 
+                                     class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg search-dropdown"
+                                     @click.away="searchResults = []">
+                                    <template x-for="result in searchResults" :key="result.place_id">
+                                        <div @click="selectSearchResult(result)" 
+                                             class="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0">
+                                            <div class="font-medium text-gray-800" x-text="result.display_name"></div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="flex flex-wrap gap-3 mb-4">
                             <button @click="getCurrentLocation()" 
                                 :disabled="isGettingLocation"
@@ -195,6 +231,18 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
                                 </svg>
                                 Kembali ke Lokasi Saya
+                            </button>
+                            <button @click="updateLocationToDatabase()" 
+                                :disabled="isSavingLocation"
+                                class="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg x-show="!isSavingLocation" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
+                                <svg x-show="isSavingLocation" class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span x-text="isSavingLocation ? 'Menyimpan...' : 'Simpan Lokasi'"></span>
                             </button>
                         </div>
                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
@@ -230,11 +278,12 @@
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
                     <div class="p-6 border-b border-gray-200">
                         <h2 class="text-lg font-semibold text-gray-800">Kelola Area Layanan</h2>
+                        <p class="text-sm text-gray-600 mt-1">Pilih area layanan Anda di provinsi Jawa</p>
                     </div>
                     <div class="p-6">
                         <!-- Common Areas -->
                         <div class="mb-6">
-                            <h3 class="text-sm font-semibold text-gray-800 mb-3">Area Populer</h3>
+                            <h3 class="text-sm font-semibold text-gray-800 mb-3">Area Populer di Jawa</h3>
                             <div class="flex flex-wrap gap-2">
                                 <template x-for="area in commonAreas" :key="area">
                                     <button @click="addCommonArea(area)"
@@ -339,8 +388,8 @@
                                 <template x-for="(area, index) in serviceAreas" :key="area.fullName">
                                     <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
                                         <div>
-                                            <div class="font-medium text-gray-800" x-text="area.district"></div>
-                                            <div class="text-sm text-gray-600" x-text="area.city + ', ' + area.province"></div>
+                                            <div class="font-medium text-gray-800" x-text="area.district_name"></div>
+                                            <div class="text-sm text-gray-600" x-text="area.city_name + ', ' + area.province_name"></div>
                                         </div>
                                         <button @click="removeServiceArea(index)" 
                                             class="text-red-600 hover:text-red-800 transition-colors">
@@ -356,9 +405,10 @@
                         <!-- Save Button -->
                         <div class="flex justify-end">
                             <button @click="saveServiceAreas()" 
-                                :disabled="serviceAreas.length === 0"
+                                :disabled="serviceAreas.length === 0 || isSavingAreas"
                                 class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                Simpan Area Layanan
+                                <span x-show="!isSavingAreas">Simpan Area Layanan</span>
+                                <span x-show="isSavingAreas">Menyimpan...</span>
                             </button>
                         </div>
                     </div>
@@ -422,6 +472,8 @@
                 isMobile: false,
                 showTutorial: true,
                 isGettingLocation: false,
+                isSavingLocation: false,
+                isSavingAreas: false,
                 currentStep: 1,
 
                 // Location data
@@ -429,6 +481,8 @@
                 currentLng: 106.8456,
                 map: null,
                 currentMarker: null,
+                searchResults: [],
+                searchQuery: '',
 
                 // Service area data
                 provinces: [],
@@ -439,16 +493,15 @@
                 selectedDistrict: '',
                 serviceAreas: [],
                 commonAreas: [
-                    'Jakarta Pusat, DKI Jakarta',
-                    'Jakarta Selatan, DKI Jakarta',
-                    'Jakarta Barat, DKI Jakarta',
-                    'Jakarta Timur, DKI Jakarta',
-                    'Jakarta Utara, DKI Jakarta',
-                    'Surabaya, Jawa Timur',
-                    'Bandung, Jawa Barat',
-                    'Medan, Sumatera Utara',
-                    'Semarang, Jawa Tengah',
-                    'Makassar, Sulawesi Selatan'
+                    'Gambir, Jakarta Pusat, DKI Jakarta',
+                    'Menteng, Jakarta Pusat, DKI Jakarta',
+                    'Kebayoran Baru, Jakarta Selatan, DKI Jakarta',
+                    'Coblong, Bandung, Jawa Barat',
+                    'Sukasari, Bandung, Jawa Barat',
+                    'Semarang Tengah, Semarang, Jawa Tengah',
+                    'Yogyakarta, Yogyakarta, DI Yogyakarta',
+                    'Wonokromo, Surabaya, Jawa Timur',
+                    'Tangerang Kota, Tangerang, Banten'
                 ],
 
                 // Methods
@@ -551,6 +604,54 @@
                     }
                 },
 
+                async updateLocationToDatabase() {
+                    try {
+                        this.isSavingLocation = true;
+                        const response = await axios.post('{{ route("mitra.area.update-location") }}', {
+                            latitude: this.currentLat,
+                            longitude: this.currentLng,
+                            _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        });
+
+                        if (response.data.success) {
+                            this.showNotification(response.data.message, 'success');
+                        }
+                    } catch (error) {
+                        this.showNotification('Gagal memperbarui lokasi', 'error');
+                    } finally {
+                        this.isSavingLocation = false;
+                    }
+                },
+
+                async searchLocation(query) {
+                    if (query.length < 3) {
+                        this.searchResults = [];
+                        return;
+                    }
+
+                    try {
+                        const response = await axios.get('{{ route("mitra.area.search-location") }}', {
+                            params: { query: query }
+                        });
+
+                        if (response.data.success) {
+                            this.searchResults = response.data.data;
+                        }
+                    } catch (error) {
+                        console.error('Error searching location:', error);
+                    }
+                },
+
+                selectSearchResult(result) {
+                    const lat = parseFloat(result.lat);
+                    const lng = parseFloat(result.lon);
+                    
+                    this.updateLocation(lat, lng);
+                    this.map.setView([lat, lng], 15);
+                    this.searchResults = [];
+                    this.searchQuery = '';
+                },
+
                 // Service area methods
                 moveToStep(step) {
                     if (step <= this.currentStep) {
@@ -559,15 +660,14 @@
                 },
 
                 async fetchProvinces() {
-                    // Mock data - replace with actual API call
-                    this.provinces = [
-                        { id: '31', name: 'DKI Jakarta' },
-                        { id: '32', name: 'Jawa Barat' },
-                        { id: '33', name: 'Jawa Tengah' },
-                        { id: '35', name: 'Jawa Timur' },
-                        { id: '12', name: 'Sumatera Utara' },
-                        { id: '73', name: 'Sulawesi Selatan' }
-                    ];
+                    try {
+                        const response = await axios.get('{{ route("mitra.area.provinces") }}');
+                        if (response.data.success) {
+                            this.provinces = response.data.data;
+                        }
+                    } catch (error) {
+                        this.showNotification('Gagal mengambil data provinsi', 'error');
+                    }
                 },
 
                 async onProvinceChange() {
@@ -578,24 +678,14 @@
                     this.districts = [];
                     this.currentStep = Math.max(this.currentStep, 2);
                     
-                    // Mock data - replace with actual API call
-                    const cityData = {
-                        '31': [
-                            { id: '3101', name: 'Jakarta Pusat' },
-                            { id: '3102', name: 'Jakarta Utara' },
-                            { id: '3103', name: 'Jakarta Barat' },
-                            { id: '3104', name: 'Jakarta Selatan' },
-                            { id: '3105', name: 'Jakarta Timur' }
-                        ],
-                        '32': [
-                            { id: '3201', name: 'Bandung' },
-                            { id: '3202', name: 'Bekasi' },
-                            { id: '3203', name: 'Bogor' },
-                            { id: '3204', name: 'Depok' }
-                        ]
-                    };
-                    
-                    this.cities = cityData[this.selectedProvince] || [];
+                    try {
+                        const response = await axios.get(`{{ url('mitra/area/cities') }}/${this.selectedProvince}`);
+                        if (response.data.success) {
+                            this.cities = response.data.data;
+                        }
+                    } catch (error) {
+                        this.showNotification('Gagal mengambil data kota', 'error');
+                    }
                 },
 
                 async onCityChange() {
@@ -604,23 +694,14 @@
                     this.selectedDistrict = '';
                     this.currentStep = Math.max(this.currentStep, 3);
                     
-                    // Mock data - replace with actual API call
-                    const districtData = {
-                        '3101': [
-                            { id: '310101', name: 'Gambir' },
-                            { id: '310102', name: 'Tanah Abang' },
-                            { id: '310103', name: 'Menteng' },
-                            { id: '310104', name: 'Senen' }
-                        ],
-                        '3104': [
-                            { id: '310401', name: 'Kebayoran Baru' },
-                            { id: '310402', name: 'Kebayoran Lama' },
-                            { id: '310403', name: 'Cilandak' },
-                            { id: '310404', name: 'Pondok Indah' }
-                        ]
-                    };
-                    
-                    this.districts = districtData[this.selectedCity] || [];
+                    try {
+                        const response = await axios.get(`{{ url('mitra/area/districts') }}/${this.selectedCity}`);
+                        if (response.data.success) {
+                            this.districts = response.data.data;
+                        }
+                    } catch (error) {
+                        this.showNotification('Gagal mengambil data kecamatan', 'error');
+                    }
                 },
 
                 onDistrictChange() {
@@ -646,13 +727,13 @@
                     }
 
                     this.serviceAreas.push({
-                        province: provinceName,
-                        city: cityName,
-                        district: districtName,
+                        province_name: provinceName,
+                        city_name: cityName,
+                        district_name: districtName,
                         fullName: fullName,
-                        provinceId: this.selectedProvince,
-                        cityId: this.selectedCity,
-                        districtId: this.selectedDistrict
+                        province_id: this.selectedProvince,
+                        city_id: this.selectedCity,
+                        district_id: this.selectedDistrict
                     });
 
                     // Reset selections
@@ -668,15 +749,15 @@
 
                 addCommonArea(areaString) {
                     const parts = areaString.split(', ');
-                    if (parts.length >= 2) {
+                    if (parts.length >= 3) {
                         const area = {
-                            province: parts[parts.length - 1],
-                            city: parts[parts.length - 2],
-                            district: parts[0],
+                            province_name: parts[parts.length - 1],
+                            city_name: parts[parts.length - 2],
+                            district_name: parts[0],
                             fullName: areaString,
-                            provinceId: 'common',
-                            cityId: 'common',
-                            districtId: 'common'
+                            province_id: 'common',
+                            city_id: 'common',
+                            district_id: 'common'
                         };
 
                         if (!this.serviceAreas.some(existingArea => existingArea.fullName === areaString)) {
@@ -693,17 +774,34 @@
                     this.showNotification('Area layanan berhasil dihapus!', 'success');
                 },
 
-                saveServiceAreas() {
+                async saveServiceAreas() {
                     if (this.serviceAreas.length === 0) {
                         this.showNotification('Tidak ada area layanan untuk disimpan!', 'error');
                         return;
                     }
 
-                    // Here you would typically send data to your backend
-                    console.log('Saving service areas:', this.serviceAreas);
-                    console.log('Current location:', { lat: this.currentLat, lng: this.currentLng });
+                    try {
+                        this.isSavingAreas = true;
+                        const response = await axios.post('{{ route("mitra.area.save") }}', {
+                            service_areas: this.serviceAreas,
+                            _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        });
 
-                    this.showNotification(`${this.serviceAreas.length} area layanan berhasil disimpan!`, 'success');
+                        if (response.data.success) {
+                            this.showNotification(response.data.message, 'success');
+                        }
+                    } catch (error) {
+                        this.showNotification('Gagal menyimpan area layanan', 'error');
+                    } finally {
+                        this.isSavingAreas = false;
+                    }
+                },
+
+                loadExistingServiceAreas() {
+                    // Load from server data passed to view
+                    @if(isset($serviceAreas) && !empty($serviceAreas))
+                        this.serviceAreas = @json($serviceAreas);
+                    @endif
                 },
 
                 showNotification(message, type = 'info') {
