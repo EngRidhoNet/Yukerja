@@ -108,7 +108,7 @@ Route::middleware(['auth', 'role:mitra'])->prefix('mitra/dashboard')->group(func
     Route::get('/area/search-location', [ServiceAreaController::class, 'searchLocation'])->name('mitra.area.search-location');
     
     Route::get('/transactions', [MitraTransactionController::class, 'index'])->name('mitra.dashboard.transactions');
-    Route::get('/transactions/{id}', [MitraTransactionController::class, 'show'])->name('mitra.dashboard.transaction.show');
+    Route::get('/transactions/{transaction}/detail', [MitraTransactionController::class, 'show'])->name('mitra.dashboard.transaction.detail');
     // Penawaran
     Route::view('/penawaran', 'mitra.penawaran')->name('mitra.dashboard.penawaran');
     
