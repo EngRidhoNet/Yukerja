@@ -57,8 +57,9 @@
              x-transition:leave-end="opacity-0 scale-95"
              style="display: none;">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-                <a href="{{ route('main') }}" class="block px-3 py-2 text-blue-900 font-medium hover:text-yellow-500">Home</a>
-                <a href="{{ route('about') }}" class="block px-3 py-2 text-blue-900 font-medium hover:text-yellow-500">About</a>
+                <a href="{{ route('main') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Home</a>
+                <a href="{{ route('about') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">About</a>
+                <a href="{{ route('mitra') }}" class="text-blue-900 font-medium hover:text-yellow-500 transition duration-300">Mitra</a>
                 <div class="px-3 py-2">
                     <button class="text-blue-900 font-medium flex items-center w-full justify-between" @click="registerOpen = !registerOpen">
                         Daftar
