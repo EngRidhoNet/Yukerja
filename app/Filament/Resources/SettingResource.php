@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Forms\Components\TextInput;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class SettingResource extends Resource
 {
@@ -45,6 +46,9 @@ class SettingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                ExportBulkAction::make(),
             ]);
     }
 

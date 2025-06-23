@@ -59,8 +59,8 @@ class PaymentController extends Controller
                 'customer_id' => $application->jobPost->customer_id,
                 'mitra_id' => $application->mitra_id,
                 'amount' => $amount,
-                'admin_fee' => $adminFee,
-                'mitra_earning' => $mitraEarning,
+                // 'admin_fee' => $adminFee,
+                // 'mitra_earning' => $mitraEarning,
                 'payment_status' => 'pending',
                 'invoice_number' => $existingTransaction ? $existingTransaction->invoice_number : 
                     'INV-' . date('Ymd') . '-' . str_pad($application->id, 6, '0', STR_PAD_LEFT),

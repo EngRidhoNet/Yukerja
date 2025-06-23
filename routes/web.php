@@ -107,7 +107,8 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     // Order History
     Route::get('/dashboard/history', [TransactionController::class, 'index'])->name('dashboard.history');
     Route::get('/dashboard/history/{id}', [TransactionController::class, 'show'])->name('dashboard.history.show');
-    Route::get('/dashboard/history/export', [TransactionController::class, 'export'])->name('dashboard.history.export');
+    Route::get('/dashboard/history/export-excel', [TransactionController::class, 'exportExcel'])->name('order.export.excel');
+    Route::get('/dashboard/history/export-csv', [TransactionController::class, 'exportCsv'])->name('order.export.csv');
 });
 
 

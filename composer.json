@@ -7,18 +7,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-<<<<<<< HEAD
         "doctrine/dbal": "^4.2",
-=======
->>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
         "dotswan/filament-map-picker": "^1.8",
+        "filament/actions": "^3.3",
         "filament/filament": "^3.3",
         "filament/widgets": "^3.3",
         "humaidem/filament-map-picker": "^0.1.5",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
-        "munafio/chatify": "^1.6"
+        "munafio/chatify": "^1.6",
+        "pxlrbt/filament-excel": "^2.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class CustomerResource extends Resource
 {
@@ -122,7 +123,7 @@ class CustomerResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\BulkAction::make('addLoyaltyPoints')
                         ->label('Add Loyalty Points')
@@ -142,7 +143,6 @@ class CustomerResource extends Resource
                                 ]);
                             }
                         }),
-                ]),
             ]);
     }
 

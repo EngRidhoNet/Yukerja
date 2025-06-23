@@ -12,6 +12,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Resources\JobPostResource\Pages;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class JobPostResource extends Resource
 {
@@ -508,6 +509,7 @@ class JobPostResource extends Resource
                     ]),
             ])
             ->bulkActions([
+                ExportBulkAction::make(),
                 Tables\Actions\DeleteBulkAction::make()
                     ->requiresConfirmation(),
             ]);

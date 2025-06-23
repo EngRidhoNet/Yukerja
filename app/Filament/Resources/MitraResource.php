@@ -18,6 +18,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Humaidem\FilamentMapPicker\Fields\OSMMap;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class MitraResource extends Resource
 {
@@ -249,7 +250,7 @@ class MitraResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\BulkAction::make('verify')
                         ->label('Verifikasi Terpilih')
@@ -262,7 +263,6 @@ class MitraResource extends Resource
                         })
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                ]),
             ])
             ->defaultSort('created_at', 'desc');
     }

@@ -26,43 +26,43 @@ class MitraDashboardController extends Controller
         $activeJobs = JobApplication::where('mitra_id', $mitra->id)
             ->where('status', 'accepted')
             ->count();
-
+    
         $completedJobs = $mitra->completed_jobs;
-
+    
         $avgRating = $mitra->avg_rating;
-
+    
         $violations = Report::where('reported_id', $user->id)
             ->where('status', 'confirmed')
             ->count();
-
+    
         // Pending Jobs (Pekerjaan yang belum selesai)
         $pendingJobs = JobPost::join('job_applications', 'job_posts.id', '=', 'job_applications.job_post_id')
             ->where('job_applications.mitra_id', $mitra->id)
             ->where('job_applications.status', 'pending')
             ->select('job_posts.*', 'job_applications.bid_amount', 'job_applications.estimated_completion_time')
             ->get();
-
+    
         // Recent Activities (using notifications)
         $recentActivities = Notification::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get();
-
+    
         // Notifications
         $notifications = Notification::where('user_id', $user->id)
             ->where('is_read', false)
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get();
-
-        // Income Data (last 5 months)
+    
+        // Income Data (last 5 months) - Using only Revenue model
         $incomeData = Revenue::whereHas('transaction', function ($query) use ($mitra) {
             $query->where('mitra_id', $mitra->id)
                 ->where('payment_status', 'completed')
-                ->where('payment_date', '>=', Carbon::now()->subMonths(5)); // Mengambil data pembayaran 5 bulan terakhir
+                ->where('payment_date', '>=', Carbon::now()->subMonths(5));
         })
-        ->join('transactions', 'revenues.transaction_id', '=', 'transactions.id') // Join tabel revenues dengan transactions
-        ->groupBy(DB::raw('YEAR(transactions.payment_date), MONTH(transactions.payment_date)'))  // Menggunakan payment_date dari tabel transactions
+        ->join('transactions', 'revenues.transaction_id', '=', 'transactions.id')
+        ->groupBy(DB::raw('YEAR(transactions.payment_date), MONTH(transactions.payment_date)'))
         ->selectRaw('YEAR(transactions.payment_date) as year, MONTH(transactions.payment_date) as month, SUM(revenues.mitra_share) as total')
         ->orderBy('year', 'asc')
         ->orderBy('month', 'asc')
@@ -70,29 +70,22 @@ class MitraDashboardController extends Controller
         ->map(function ($item) {
             return [
                 'month' => Carbon::create($item->year, $item->month)->format('M'),
-                'total' => $item->total
+                'total' => $item->total ?? 0
             ];
         });
-
-        // Merge additional income data from Transaction model if needed
-        $incomeDataFromTransaction = Transaction::where('mitra_id', $mitra->id)
-            ->where('payment_status', 'completed')
-            ->where('payment_date', '>=', Carbon::now()->subMonths(5))
-            ->groupBy(DB::raw('YEAR(payment_date), MONTH(payment_date)'))
-            ->selectRaw('YEAR(payment_date) as year, MONTH(payment_date) as month, SUM(mitra_earning) as total')
-            ->orderBy('year', 'asc')
-            ->orderBy('month', 'asc')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'month' => Carbon::create($item->year, $item->month)->format('M'),
-                    'total' => $item->total
-                ];
-            });
-
-        // Combine both datasets or use one depending on your requirements
-        $incomeData = $incomeData->merge($incomeDataFromTransaction);
-
+    
+        // If no data from Revenue, create empty array for last 5 months
+        if ($incomeData->isEmpty()) {
+            $incomeData = collect();
+            for ($i = 4; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $incomeData->push([
+                    'month' => $date->format('M'),
+                    'total' => 0
+                ]);
+            }
+        }
+    
         return view('mitra.dashboard', compact(
             'user',
             'mitra',

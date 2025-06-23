@@ -123,6 +123,9 @@
                         <button onclick="exportToCSV()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-all duration-200 shadow-sm">
                             <i class="fas fa-download mr-1"></i> Export CSV
                         </button>
+                        <button onclick="exportToExcel()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm">
+                            <i class="fas fa-file-excel mr-1"></i> Export Excel
+                        </button>
                     </div>
                 </div>
 
@@ -545,15 +548,7 @@
                             
                             <div class="space-y-4">
                                 <h4 class="font-semibold text-gray-900 border-b pb-2">Rincian Pembayaran</h4>
-                                <div class="space-y-2">
-                                    <div class="flex justify-between">
-                                        <span class="text-sm text-gray-600">Pendapatan Mitra:</span>
-                                        <span class="text-sm font-medium">${formatCurrency(order.mitra_earning)}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-sm text-gray-600">Biaya Admin:</span>
-                                        <span class="text-sm font-medium">${formatCurrency(order.admin_fee)}</span>
-                                    </div>
+                             
                                     <div class="flex justify-between border-t pt-2">
                                         <span class="font-semibold">Total:</span>
                                         <span class="font-bold text-blue-600">${formatCurrency(order.amount)}</span>
@@ -664,14 +659,7 @@
                         
                         <div style="border: 2px solid #0B2F57; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                             <h3 style="color: #0B2F57; margin-bottom: 15px; text-align: center;">Rincian Pembayaran</h3>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0;">
-                                <span>Subtotal (Pendapatan Mitra):</span>
-                                <span>${formatCurrency(order.mitra_earning)}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0;">
-                                <span>Biaya Admin:</span>
-                                <span>${formatCurrency(order.admin_fee)}</span>
-                            </div>
+                            
                             <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; padding: 15px 0; border-top: 2px solid #0B2F57; margin-top: 10px;">
                                 <span>Total Pembayaran:</span>
                                 <span style="color: #0B2F57; background: #e3f2fd; padding: 5px 10px; border-radius: 5px;">${formatCurrency(order.amount)}</span>
@@ -729,13 +717,87 @@
             });
         }
 
-        // Export to CSV
+        function exportToExcel() {
+            const search = document.getElementById('searchInput').value;
+            const status = currentFilter;
+            const url = `/customer/dashboard/history/export-excel?status=${status}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            
+            showLoading();
+            
+            // Create a temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `order_history_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            hideLoading();
+            showMessage('Export Excel dimulai...');
+        }
+
         function exportToCSV() {
             const search = document.getElementById('searchInput').value;
             const status = currentFilter;
-            const url = `/customer/dashboard/history/export?status=${status}${search ? '&search=' + encodeURIComponent(search) : ''}`;
-            window.location.href = url;
+            const url = `/customer/dashboard/history/export-csv?status=${status}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `order_history_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
             showMessage('Export CSV dimulai...');
+        }
+
+        // Refresh data function (updated)
+        function refreshData() {
+            showLoading();
+            
+            const url = new URL(window.location);
+            url.searchParams.set('status', currentFilter);
+            const search = document.getElementById('searchInput').value;
+            if (search) {
+                url.searchParams.set('search', search);
+            } else {
+                url.searchParams.delete('search');
+            }
+            
+            fetch(url.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                currentOrders = result.transactions;
+                
+                // Update statistics
+                document.querySelector('.stats-total').textContent = result.stats.total;
+                document.querySelector('.stats-completed').textContent = result.stats.completed;
+                document.querySelector('.stats-pending').textContent = result.stats.pending;
+                document.querySelector('.stats-failed').textContent = result.stats.failed;
+                
+                // Update pagination
+                currentPage = result.pagination.current_page;
+                totalPages = result.pagination.last_page;
+                
+                // Update pagination display
+                document.querySelector('.pagination-showing').textContent = ((currentPage - 1) * result.pagination.per_page + 1);
+                document.querySelector('.pagination-to').textContent = Math.min(currentPage * result.pagination.per_page, result.pagination.total);
+                document.querySelector('.pagination-total').textContent = result.pagination.total;
+                
+                renderOrders();
+                updatePaginationControls();
+                hideLoading();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Gagal memuat data', 'error');
+                hideLoading();
+            });
         }
 
         // Refresh data

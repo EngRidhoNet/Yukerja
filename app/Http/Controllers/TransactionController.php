@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TransactionsExport;
+use App\Exports\OrderHistoryExport;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -174,7 +176,6 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transaction and revenue recorded successfully']);
     }
 
-
     public function export(Request $request)
     {
         $user = Auth::user();
@@ -185,5 +186,154 @@ class TransactionController extends Controller
             new TransactionsExport($user->id, $status, $search),
             'order_history_' . date('Y-m-d') . '.csv'
         );
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Base query untuk export (tanpa pagination)
+        $query = Transaction::where('customer_id', $user->id)
+            ->with(['jobPost', 'mitra.user'])
+            ->orderBy('created_at', 'desc');
+        
+        // Apply filters
+        $status = $request->query('status', 'all');
+        if ($status !== 'all') {
+            $query->where('payment_status', $status);
+        }
+        
+        if ($request->has('search') && !empty($request->query('search'))) {
+            $search = $request->query('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhereHas('jobPost', function ($q) use ($search) {
+                      $q->where('title', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('mitra.user', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $transactions = $query->get();
+        
+        // Transform data untuk export
+        $exportData = $transactions->map(function ($transaction) {
+            return (object) [
+                'invoice_number' => $transaction->invoice_number,
+                'job_title' => $transaction->jobPost->title ?? 'N/A',
+                'mitra_name' => $transaction->mitra->user->name ?? 'N/A',
+                'amount' => $transaction->amount,
+                'payment_status' => $transaction->payment_status,
+                'payment_method' => $transaction->payment_method,
+                'created_at' => $transaction->created_at,
+                'payment_date' => $transaction->payment_date,
+                'transaction_reference' => $transaction->transaction_reference,
+            ];
+        });
+        
+        $stats = [
+            'total' => $transactions->count(),
+            'completed' => $transactions->where('payment_status', 'paid')->count(),
+            'pending' => $transactions->where('payment_status', 'pending')->count(),
+            'failed' => $transactions->where('payment_status', 'failed')->count(),
+        ];
+        
+        $filename = 'riwayat_pesanan_' . $user->name . '_' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx';
+        
+        return Excel::download(new OrderHistoryExport($exportData, $stats), $filename);
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Base query untuk export (tanpa pagination)
+        $query = Transaction::where('customer_id', $user->id)
+            ->with(['jobPost', 'mitra.user'])
+            ->orderBy('created_at', 'desc');
+        
+        // Apply filters
+        $status = $request->query('status', 'all');
+        if ($status !== 'all') {
+            $query->where('payment_status', $status);
+        }
+        
+        if ($request->has('search') && !empty($request->query('search'))) {
+            $search = $request->query('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhereHas('jobPost', function ($q) use ($search) {
+                      $q->where('title', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('mitra.user', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $transactions = $query->get();
+        
+        $filename = 'riwayat_pesanan_' . $user->name . '_' . Carbon::now()->format('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+        
+        $callback = function() use ($transactions) {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for proper UTF-8 handling in Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // CSV Header
+            fputcsv($file, [
+                'No.',
+                'No. Invoice',
+                'Layanan',
+                'Mitra',
+                'Total (Rp)',
+                'Status Pembayaran',
+                'Metode Pembayaran',
+                'Tanggal Pesanan',
+                'Tanggal Pembayaran',
+                'Referensi Transaksi'
+            ]);
+            
+            // CSV Data
+            $no = 1;
+            foreach ($transactions as $transaction) {
+                fputcsv($file, [
+                    $no++,
+                    $transaction->invoice_number,
+                    $transaction->jobPost->title ?? 'N/A',
+                    $transaction->mitra->user->name ?? 'N/A',
+                    number_format($transaction->amount, 0, ',', '.'),
+                    $this->getStatusText($transaction->payment_status),
+                    $transaction->payment_method ?? '-',
+                    $transaction->created_at ? $transaction->created_at->format('d/m/Y H:i') : '-',
+                    $transaction->payment_date ? Carbon::parse($transaction->payment_date)->format('d/m/Y H:i') : '-',
+                    $transaction->transaction_reference ?? '-'
+                ]);
+            }
+            
+            fclose($file);
+        };
+        
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    private function getStatusText($status)
+    {
+        $statusMap = [
+            'paid' => 'Lunas',
+            'pending' => 'Pending',
+            'failed' => 'Gagal',
+            'refunded' => 'Refund'
+        ];
+
+        return $statusMap[$status] ?? ucfirst($status);
     }
 }
