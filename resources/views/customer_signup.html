@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mitra Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .brand {
+      color: #1a237e; /* Dark blue color */
+    }
+    .toggle-password {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Bagian Kiri -->
+    <div class="left">
+      <img src="/images/illustration.png.png" alt="Illustration" />
+    </div>
+
+    <!-- Bagian Kanan -->
+    <div class="right">
+      <div class="form-box">
+        <h2><span class="brand">Customer</span> Sign up</h2>
+        <p>If you already have an account register <br> You can <a href="customer_signin.html">Login here !</a></p>
+
+        <!-- Username -->
+        <label for="username">Username</label>
+        <div class="input-box">
+          <span class="icon material-icons">person</span>
+          <input type="text" id="username" placeholder="Enter your Username" />
+        </div>
+
+        <!-- Email -->
+        <label for="email">Email</label>
+        <div class="input-box">
+          <span class="icon material-icons">mail</span>
+          <input type="email" id="email" placeholder="Enter your email address" />
+        </div>
+
+        <!-- Phone Number -->
+        <label for="phone">Phone Number</label>
+        <div class="input-box">
+          <span class="icon material-icons">phone</span>
+          <input type="tel" id="phone" placeholder="Enter your phone number" />
+        </div>
+
+        <!-- Password -->
+        <label for="password">Kata Sandi</label>
+        <div class="input-box">
+          <span class="icon material-icons">lock</span>
+          <input type="password" id="password" placeholder="Enter your Password" />
+          <span class="toggle-password material-icons" onclick="togglePassword('password', this)">visibility_off</span>
+        </div>
+
+        <!-- Confirm Password -->
+        <label for="confirm-password">Confirm Password</label>
+        <div class="input-box">
+          <span class="icon material-icons">lock</span>
+          <input type="password" id="confirm-password" placeholder="Confirm your Password" />
+          <span class="toggle-password material-icons" onclick="togglePassword('confirm-password', this)">visibility_off</span>
+        </div>
+
+        <!-- Tombol -->
+        <button class="btn">Register</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword(fieldId, iconElement) {
+      const passwordField = document.getElementById(fieldId);
+      
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        iconElement.textContent = "visibility";
+      } else {
+        passwordField.type = "password";
+        iconElement.textContent = "visibility_off";
+      }
+    }
+  </script>
+</body>
+</html>

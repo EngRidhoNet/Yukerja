@@ -1,0 +1,589 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5;
+    margin-left: 85px;
+  }
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .left-menu {
+    display: flex;
+    align-items: center;
+  }
+  
+  .menu-icon {
+    font-size: 20px;
+    margin-right: 15px;
+    cursor: pointer;
+  }
+  
+  .logo {
+    margin-top: 15px;
+    margin-left: 15px;
+    height: 70px;
+  }
+  
+  .search-bar {
+    flex-grow: 1;
+    margin: 0 150px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-bar i {
+    position: absolute;
+    left: 15px;
+    color: #888;
+    font-size: 14px;
+  }
+  
+  .search-bar input {
+    width: 100%;
+    padding: 10px 15px 10px 35px; /* Tambahkan padding kiri agar tidak bertabrakan dengan ikon */
+    border-radius: 20px;
+    border: none;
+    background-color: #e9e9e9;
+    font-size: 14px;
+  }
+  
+  .right-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+  }
+  
+  .notification {
+    font-size: 18px;
+    position: relative;
+  }
+  
+  .notif-badge {
+    position: absolute;
+    top: -4px;
+    left: 15px;
+    background-color: #facc15;
+    color: #000;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-weight: bold;
+  }
+  .custom-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    cursor: pointer;
+  }
+  
+  /* Category Navigation */
+  .category-nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    gap: 20px;
+  }
+  
+  .category-nav a {
+    margin-left: 10px;
+    color: #888;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .category-nav a.active {
+    color: #1d3557;
+  }
+  .category-link.active {
+    color: #1d3557;
+    font-weight: bold;
+  }
+  .category-filters {
+    margin-left: 298px;
+  }
+  .underline-separator {
+    position: absolute;
+    bottom: 0;
+    left: 40px;
+    right: 30px;
+    width: 94%;
+    height: 3px;
+    background: #D9D9D9;
+  }
+  
+  .filter-right {
+    color: #444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+  }
+  .filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    margin-left: 38px;
+  }
+  .user-menu-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    padding: 16px;
+    z-index: 1000;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .profile-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+    margin-left: 12px;
+  }
+  
+  .profile-pic {
+    background: #ccc;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+  }
+  
+  .profile-name {
+    font-weight: bold;
+  }
+  
+  .profile-email {
+    font-size: 0.9em;
+    color: gray;
+  }
+  
+  .edit-button {
+    width: 200px;
+    height: 35px;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #ccc;
+    background: #0B2F57;
+    color: #ffffff; 
+    border-radius: 8px;
+    margin-bottom: 12px;
+    margin-left: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    
+  }
+  
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Ubah sesuai kebutuhan, misalnya dari 8px ke 12px */
+    padding: 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .menu-item span {
+    position: relative;
+    top: 2px;
+  }
+  .logout {
+    border-top: 3px solid #eee;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+  .icon-img {
+    width: 20px;
+    height: 20px;
+  }
+  .dropdown-button {
+    background-color: #0B2F57;
+    color: #FEC907;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+    width: 125px;
+    height: 26px;
+    text-align: center;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  
+  .filter-options select {
+    background-color: #0B2F57;         /* Warna latar sesuai Rectangle 27 */
+    color: #FEC907;                    /* Warna teks sesuai teks "Rating Tertinggi" */
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25); /* drop shadow dari Group 229 */
+    width: 145px;
+    height: 26px;
+    text-align: center;
+    margin-left: 10px;
+  }
+  
+  .filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  #toggleFilter {
+    background: none;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .filter-button {
+    background-color: #0B2F57;
+    color: #FEC907;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+    width: 75px;
+    height: 26px;
+    text-align: center;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  
+  /* Jika tombol sedang aktif */
+  .filter-button.active {
+    background-color: #d0cfcf;
+    color: #08213e;
+  }
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    justify-content: flex-start;
+  }
+  .card-container.horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 12px;
+  }
+  .card-job {
+    margin-top: 15px;
+    margin-left: 65px;
+    width: 183px;
+    background: #ffffff;
+    box-shadow: 0px 0px 4.1px 1.17px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 140px;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: flex-start; /* Mengatur agar elemen di dalam card-header tidak sejajar tengah secara vertikal */
+    gap: 10px;
+  }
+  
+  .img-placeholder {
+    width: 40px;
+    height: 40px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .text-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Pastikan teks berada di atas dan tidak ikut di bawah gambar */
+    gap: 5px; /* Memberikan jarak antar elemen teks */
+  }
+  
+  .title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0B2F57;
+    margin: 0;
+    line-height: 1.3;
+  }
+  
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #0B2F57;
+    font-weight: 600;
+    margin-bottom: 2px; /* atau 0 jika ingin benar-benar rapat */
+  }
+  
+  .rating-row .star {
+    color: #FFD700;
+    font-size: 14px;
+  }
+  
+  .rating-row .distance {
+    font-weight: 400;
+    color: #999;
+    font-size: 10px;
+  }
+  
+  
+  .price {
+    font-size: 10px;
+    font-weight: 700;
+    color: #0B2F57;
+    margin: 0;
+  }
+  
+  .card-footer {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .button-chat {
+    width: 50px;
+    height: 21px;
+    background: #0B2F57;
+    border-radius: 3.27px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11.5px;
+    line-height: 17px;
+    text-align: center;
+    color: #FFFFFF;
+    cursor: pointer;
+  }
+  
+  .button-order {
+    width: 150px;
+    height: 21px;
+    background: #FEC907;
+    border-radius: 3.27px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11.5px;
+    line-height: 17px;
+    text-align: center;
+    color: #FFFFFF;
+    cursor: pointer;
+  }
+  .sidebar {
+    width: 85px;
+    background-color: #ffffff;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    padding-top: 20px;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    border-right: 3px solid #ddd;
+  }
+  /* Untuk menyembunyikan sidebar */
+  .sidebar.hidden {
+    transform: translateX(-100%); /* Menggeser sidebar keluar dari layar */
+  }
+  .sidebar .menu-icon {
+    font-size: 32px;
+    color: #0B2F57;
+    cursor: pointer;
+  }
+  
+  .sidebar a {
+    color: rgb(0, 0, 0);
+    padding: 15px 20px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+  }
+  
+  .sidebar a:hover {
+    background-color: #34495E;
+  }
+  .edit-profile-container {
+    width: 600px;
+    margin: 40px auto;
+  }
+  
+  .nav-tabs {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .nav-tabs span {
+    font-weight: 700;
+    font-size: 15px;
+    color: #979797;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .nav-tabs .active {
+    color: #4F4F4F;
+  }
+  
+  .edit-profile-box {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .btn-ganti-gambar {
+    padding: 8px 16px;
+    background: #D9D9D9;
+    border-radius: 5px;
+    border: none;
+  
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 22px;
+    color: #000000;
+    cursor: pointer;
+  }
+  
+  
+  .form-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    display: flex;
+    align-items: flex-start; /* Ganti center jadi flex-start */
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #979797;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    width: 140px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 2px solid #D9D9D9;
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .password-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .change-password {
+    display: block;       /* Biar muncul di bawah input */
+    margin-top: 5px;      /* Jarak dari input */
+    font-size: 12px;
+    color: #007BFF;
+    text-decoration: none;
+  }
+  
+  .change-password:hover {
+    text-decoration: underline;
+  }
+  
+  
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Menyamakan lebar dengan input lainnya */
+  }
+  
+  .input-container input {
+    width: 95%;
+  }
+  
+  .btn-save {
+    width: 80%; /* Menyamakan lebar tombol dengan input lainnya */
+    padding: 10px;
+    background-color: #0B2F57;
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px; /* Memberikan sedikit jarak atas dengan form input */
+    margin-left: 110px;
+    cursor: pointer;
+    box-sizing: border-box; /* Agar padding tidak membuat tombol melebihi lebar container */
+  }
+  
