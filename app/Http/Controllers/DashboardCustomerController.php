@@ -103,7 +103,6 @@ class DashboardCustomerController extends Controller
         ]);
     }
 
-
     public function filterByCategory( $request, $categoryId)
     {
         $category = $categoryId !== 'all' ? ServiceCategory::find($categoryId) : null;

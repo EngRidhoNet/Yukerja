@@ -59,7 +59,8 @@ class TransactionController extends Controller
                 'job_title' => $transaction->jobPost->title ?? 'N/A',
                 'mitra_name' => $transaction->mitra->user->name ?? 'N/A',
                 'amount' => $transaction->amount,
-                'commission_rate' => $transaction->commission_rate, // this is where we changed it
+                'admin_fee' => $transaction->admin_fee,
+                'mitra_earning' => $transaction->mitra_earning,
                 'payment_status' => $transaction->payment_status,
                 'payment_method' => $transaction->payment_method,
                 'payment_date' => $transaction->payment_date ? $transaction->payment_date->toDateTimeString() : null,

@@ -21,8 +21,8 @@ class MitraDashboardController extends Controller
     {
         $mitra = Auth::user()->mitra;
         $user = Auth::user();
-
-        // Statistik Pekerjaan
+        
+        // Statistics
         $activeJobs = JobApplication::where('mitra_id', $mitra->id)
             ->where('status', 'accepted')
             ->count();
@@ -42,20 +42,20 @@ class MitraDashboardController extends Controller
             ->select('job_posts.*', 'job_applications.bid_amount', 'job_applications.estimated_completion_time')
             ->get();
 
-        // Aktivitas Terbaru (menggunakan notifikasi)
+        // Recent Activities (using notifications)
         $recentActivities = Notification::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get();
 
-        // Notifikasi
+        // Notifications
         $notifications = Notification::where('user_id', $user->id)
             ->where('is_read', false)
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get();
 
-        // Data Penghasilan (5 bulan terakhir)
+        // Income Data (last 5 months)
         $incomeData = Revenue::whereHas('transaction', function ($query) use ($mitra) {
             $query->where('mitra_id', $mitra->id)
                 ->where('payment_status', 'completed')
@@ -73,6 +73,25 @@ class MitraDashboardController extends Controller
                 'total' => $item->total
             ];
         });
+
+        // Merge additional income data from Transaction model if needed
+        $incomeDataFromTransaction = Transaction::where('mitra_id', $mitra->id)
+            ->where('payment_status', 'completed')
+            ->where('payment_date', '>=', Carbon::now()->subMonths(5))
+            ->groupBy(DB::raw('YEAR(payment_date), MONTH(payment_date)'))
+            ->selectRaw('YEAR(payment_date) as year, MONTH(payment_date) as month, SUM(mitra_earning) as total')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'month' => Carbon::create($item->year, $item->month)->format('M'),
+                    'total' => $item->total
+                ];
+            });
+
+        // Combine both datasets or use one depending on your requirements
+        $incomeData = $incomeData->merge($incomeDataFromTransaction);
 
         return view('mitra.dashboard', compact(
             'user',
@@ -149,18 +168,18 @@ class MitraDashboardController extends Controller
     {
         $mitra = Auth::user()->mitra;
         $user = Auth::user();
-
-        // Ambil notifikasi
+        
+        // Fetch notifications
         $notifications = Notification::where('user_id', $user->id)
             ->where('is_read', false)
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get();
-
-        // Ambil kategori layanan untuk filter
+        
+        // Fetch service categories for filter
         $categories = ServiceCategory::where('is_active', true)->get();
 
-        // Bangun query untuk semua pekerjaan yang terbuka
+        // Build query for all open jobs
         $query = JobPost::where('status', 'open')
             ->whereNotIn('id', function ($query) use ($mitra) {
                 $query->select('job_post_id')
@@ -173,7 +192,7 @@ class MitraDashboardController extends Controller
                 [$mitra->latitude, $mitra->longitude, $mitra->latitude]
             );
 
-        // Terapkan filter
+        // Apply filters
         if ($request->filled('category')) {
             $query->where('service_category_id', $request->category);
         }
@@ -190,7 +209,7 @@ class MitraDashboardController extends Controller
             $query->where('budget', '<=', $request->budget_max);
         }
 
-        // Terapkan pengurutan
+        // Apply sorting
         $sort = $request->input('sort', 'distance');
         $direction = $request->input('direction', 'asc');
 
@@ -202,7 +221,7 @@ class MitraDashboardController extends Controller
             $query->orderBy('distance', $direction);
         }
 
-        // Paginasi hasil
+        // Paginate results
         $jobs = $query->paginate(10);
 
         return view('mitra.job-terdekat', compact(

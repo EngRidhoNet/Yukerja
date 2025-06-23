@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+
 use App\Models\Setting;  // Pastikan ini yang diimpor
 
 class JobApplicationController extends Controller
@@ -19,7 +20,6 @@ class JobApplicationController extends Controller
     {
         // Get the authenticated user's customer ID
         $customerId = Auth::user()->customer->id;
-        
         $jobPosts = JobPost::where('customer_id', $customerId)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -31,18 +31,15 @@ class JobApplicationController extends Controller
     {
         try {
             $customer = Auth::user()->customer;
-    
             if (!$customer) {
                 return response()->json(['error' => 'Akses ditolak. Profil pelanggan tidak ditemukan.'], 403);
             }
     
             $jobPost = JobPost::where('customer_id', $customer->id)->findOrFail($jobPostId);
-    
             $applications = JobApplication::where('job_post_id', $jobPostId)
                 ->with('mitra.mitra')
                 ->get()
                 ->map(function ($app) {
-                    
                     $mitraUser = $app->mitra;
                     $mitraProfile = optional($mitraUser)->mitra;
     
@@ -72,12 +69,45 @@ class JobApplicationController extends Controller
                 'jobPost' => ['title' => $jobPost->title],
                 'applications' => $applications,
             ]);
-    
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Pekerjaan tidak ditemukan atau Anda tidak memiliki akses.'], 404);
         } catch (\Exception $e) {
             Log::error('Error in getApplications: ' . $e->getMessage() . ' on line ' . $e->getLine() . ' in ' . $e->getFile());
             return response()->json(['error' => 'Terjadi kesalahan pada server.'], 500);
+        }
+    }
+
+    public function markAsCompleted(JobApplication $application)
+    {
+        try {
+            $this->authorizeApplication($application);
+
+            if ($application->status !== 'in_progress') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Hanya pekerjaan yang sedang berlangsung yang bisa ditandai selesai.'
+                ], 400);
+            }
+
+            DB::beginTransaction();
+
+            $application->update(['status' => 'completed']);
+            $application->jobPost->update(['status' => 'completed']);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pekerjaan berhasil ditandai selesai!'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error marking as completed: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -118,13 +148,16 @@ class JobApplicationController extends Controller
                 'platform_share' => $platform_share,
                 'mitra_share' => $mitra_share
             ]);
-            
+
+            DB::beginTransaction();
+
+            // Update application status
+            $application->update(['status' => 'accepted']);
             // Reject other applications for this job
             JobApplication::where('job_post_id', $application->job_post_id)
                 ->where('id', '!=', $application->id)
                 ->where('status', 'open')
                 ->update(['status' => 'rejected']);
-            
             DB::commit();
             
             return response()->json([
@@ -135,18 +168,48 @@ class JobApplicationController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error accepting application: ' . $e->getMessage() . ' Line: ' . $e->getLine() . ' File: ' . $e->getFile());
-            
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Penawaran berhasil diterima! Silakan lakukan pembayaran untuk memulai pekerjaan.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error accepting application: ' . $e->getMessage() . ' Line: ' . $e->getLine() . ' File: ' . $e->getFile());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat menerima penawaran: ' . $e->getMessage()
             ], 500);
         }
     }
+
+    public function reject(JobApplication $application)
+    {
+        try {
+            $this->authorizeApplication($application);
+
+            $application->update(['status' => 'rejected']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Penawaran berhasil ditolak!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error rejecting application: ' . $e->getMessage() . ' Line: ' . $e->getLine() . ' File: ' . $e->getFile());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menolak penawaran: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function deal(JobApplication $application)
     {
         try {
             $this->authorizeApplication($application);
-            
             if ($application->status !== 'accepted') {
                 return response()->json([
                     'success' => false,
@@ -158,12 +221,14 @@ class JobApplicationController extends Controller
             
             // Update application to in_progress
             $application->update(['status' => 'in_progress']);
-            
+            DB::beginTransaction();
+
+            // Update application to in_progress
+            $application->update(['status' => 'in_progress']);
             // Update transaction payment status
             $transaction = Transaction::where('job_post_id', $application->job_post_id)
                 ->where('mitra_id', $application->mitra_id)
                 ->first();
-                
             if ($transaction) {
                 $transaction->update([
                     'payment_status' => 'paid',
@@ -173,7 +238,6 @@ class JobApplicationController extends Controller
             }
             
             DB::commit();
-            
             return response()->json([
                 'success' => true,
                 'message' => 'Deal berhasil! Pekerjaan dimulai.'
@@ -181,7 +245,6 @@ class JobApplicationController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error processing deal: ' . $e->getMessage() . ' Line: ' . $e->getLine() . ' File: ' . $e->getFile());
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat memproses deal: ' . $e->getMessage()
@@ -189,6 +252,37 @@ class JobApplicationController extends Controller
         }
     }
 
+    public function rate(Request $request, JobApplication $application)
+    {
+        try {
+            $this->authorizeApplication($application);
+
+            $validated = $request->validate([
+                'rating' => 'required|integer|min:1|max:5',
+                'review' => 'nullable|string|max:1000',
+            ]);
+
+            $application->update([
+                'status' => 'completed',
+                'rating' => $validated['rating'],
+                'review' => $validated['review'],
+            ]);
+
+            $application->jobPost->update(['status' => 'completed']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rating berhasil diberikan!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error rating application: ' . $e->getMessage() . ' Line: ' . $e->getLine() . ' File: ' . $e->getFile());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memberikan rating: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     private function authorizeApplication(JobApplication $application)
     {
@@ -198,4 +292,3 @@ class JobApplicationController extends Controller
         }
     }
 }
-

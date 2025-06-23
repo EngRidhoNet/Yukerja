@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MitraTransactionController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AuthController,
@@ -45,6 +46,8 @@ Route::view('/', 'main')->name('main');
 Route::view('/about', 'about')->name('about');
 Route::get('/service/{id}', [HomeController::class, 'serviceDetail'])->name('service.detail');
 
+Route::view('/mitra', 'mitra')->name('mitra');
+
 // ==============================
 // Auth Routes (Login & Logout)
 // ==============================
@@ -82,16 +85,34 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
     Route::get('/dashboard/penawaran', [JobApplicationController::class, 'index'])->name('dashboard.penawaran');
     Route::get('/jobs/{jobPost}/applications', [JobApplicationController::class, 'getApplications'])->name('dashboard.applications.get');
     Route::post('/applications/{application}/deal', [JobApplicationController::class, 'deal'])->name('dashboard.applications.deal');
+
+    Route::get('/dashboard/post-job', [JobPostController::class, 'create'])->name('dashboard.post-job');
+    Route::post('/dashboard/post-job/store', [JobPostController::class, 'store'])->name('dashboard.post-job.store');
+
+    // Job Applications (Penawaran)
+    Route::get('/dashboard/penawaran', [JobApplicationController::class, 'index'])->name('dashboard.penawaran');
+    Route::get('/jobs/{jobPost}/applications', [JobApplicationController::class, 'getApplications'])->name('dashboard.applications.get');
+
     Route::post('/applications/{application}/accept', [JobApplicationController::class, 'accept'])->name('dashboard.applications.accept');
     Route::post('/applications/{application}/reject', [JobApplicationController::class, 'reject'])->name('dashboard.applications.reject');
     Route::post('/applications/{application}/rate', [JobApplicationController::class, 'rate'])->name('dashboard.applications.rate');
     Route::post('/applications/{application}/delete', [JobApplicationController::class, 'delete'])->name('dashboard.applications.delete');
+
+    // TAMBAHKAN PAYMENT ROUTES DI SINI:
+    Route::post('/applications/{application}/payment', [PaymentController::class, 'createPayment'])->name('applications.payment');
+    Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+    Route::get('/transactions/{transaction}/status', [PaymentController::class, 'checkPaymentStatus'])->name('dashboard.transactions.status');
+    Route::post('/applications/{application}/complete', [JobApplicationController::class, 'markAsCompleted'])->name('dashboard.applications.complete');
 
     // Order History
     Route::get('/dashboard/history', [TransactionController::class, 'index'])->name('dashboard.history');
     Route::get('/dashboard/history/{id}', [TransactionController::class, 'show'])->name('dashboard.history.show');
     Route::get('/dashboard/history/export', [TransactionController::class, 'export'])->name('dashboard.history.export');
 });
+
+
+
+Route::post('/webhooks/xendit', [PaymentController::class, 'handleWebhook'])->name('webhooks.xendit');
 
 // ==============================
 // Mitra Dashboard & Features

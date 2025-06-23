@@ -26,7 +26,6 @@ class DashboardStatsWidget extends BaseWidget
     
     // Cache configuration
     protected int $cacheMinutes = 5;
-
     protected function getPlatformRevenueTrendData($startDate, $endDate): array
     {
         return $this->generateDataPoints($startDate, $endDate, function ($date) {
@@ -45,8 +44,6 @@ class DashboardStatsWidget extends BaseWidget
             return $totalMitraRevenue;
         });
     }
-
-
     protected function getFormSchema(): array
     {
         return [
@@ -105,7 +102,6 @@ class DashboardStatsWidget extends BaseWidget
             ];
         });
     }
-
     // Add the method for platform revenue chart
     // Update for Platform Revenue Chart
     protected function createPlatformRevenueChart(array $current, array $comparison, array $charts): Stat
@@ -140,8 +136,6 @@ class DashboardStatsWidget extends BaseWidget
                 'class' => 'text-center',
             ]);
     }
-
-
     protected function getCurrentPeriodData(): array
     {
         $startDate = now()->subDays($this->filterPeriod);
@@ -328,10 +322,10 @@ class DashboardStatsWidget extends BaseWidget
 
    protected function getAdvancedChartData(): array
 {
-    $startDate = now()->subDays($this->filterPeriod);
-    $endDate = now();
-    
-    return [
+        $startDate = now()->subDays($this->filterPeriod);
+        $endDate = now();
+        
+        return [
             'job_posts' => $this->getModelTrendData(JobPost::class, $startDate, $endDate),
             'customers' => $this->getModelTrendData(Customer::class, $startDate, $endDate),
             'mitras' => $this->getModelTrendData(Mitra::class, $startDate, $endDate),
@@ -340,7 +334,6 @@ class DashboardStatsWidget extends BaseWidget
             'revenue' => $this->getRevenueTrendData($startDate, $endDate),
             'engagement' => $this->getEngagementTrendData($startDate, $endDate),
             'performance' => $this->getPerformanceTrendData($startDate, $endDate),
-            
             // Add platform revenue chart data
             'platform_revenue' => $this->getPlatformRevenueTrendData($startDate, $endDate),
             
@@ -348,7 +341,7 @@ class DashboardStatsWidget extends BaseWidget
             'mitra_revenue' => $this->getMitraRevenueTrendData($startDate, $endDate),
         ];
     }
-
+    
 
     protected function getModelTrendData($modelClass, $startDate, $endDate): array
     {

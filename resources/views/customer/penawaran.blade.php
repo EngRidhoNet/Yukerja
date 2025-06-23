@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YukKerja - Kelola Penawaran</title>
+<<<<<<< HEAD
     <meta name="csrf-token" content="{{ csrf_token() }}"> 
+=======
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -95,8 +99,20 @@
         }
 
         @keyframes pulse-glow {
+<<<<<<< HEAD
             0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
             50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+=======
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+            }
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
         }
 
         .proposal-card:hover {
@@ -149,8 +165,18 @@
         }
 
         @keyframes spin {
+<<<<<<< HEAD
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+=======
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
         }
     </style>
 </head>
@@ -226,7 +252,12 @@
                                     <div>
                                         <h3 class="text-lg font-bold text-gray-900">{{ $jobPost->title }}</h3>
                                         <p class="text-sm text-gray-600 mb-1">
+<<<<<<< HEAD
                                             {{ \Carbon\Carbon::parse($jobPost->created_at)->format('d M Y') }}</p>
+=======
+                                            {{ \Carbon\Carbon::parse($jobPost->created_at)->format('d M Y') }}
+                                        </p>
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
                                         <p class="text-sm text-gray-600">{{ Str::limit($jobPost->description, 100) }}</p>
                                     </div>
                                     <div class="mt-4 lg:mt-0 flex flex-col items-end">
@@ -527,6 +558,7 @@
                                     <p class="text-gray-700 leading-relaxed">${app.message || 'Tidak ada pesan tambahan.'}</p>
                                 </div>
 
+<<<<<<< HEAD
                                 <!-- Progress Section -->
                                 ${(app.status === 'completed' || app.status === 'in_progress') ? `
                                     <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
@@ -547,6 +579,8 @@
                                         </div>
                                     </div>
                                 ` : ''}
+=======
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
 
                                 <!-- Action Buttons -->
                                 <div class="flex flex-col sm:flex-row gap-3">
@@ -588,6 +622,7 @@
         }
 
 
+<<<<<<< HEAD
       function getActionButtons(app, csrfToken) {
             console.log('Application status:', app.status); // Debug log
             
@@ -684,6 +719,147 @@
             }
         }
 
+=======
+        function getActionButtons(app, csrfToken) {
+            console.log('Application status:', app.status);
+
+            switch (app.status) {
+                case 'open':
+                case 'pending':
+                    return `
+                <button onclick="acceptApplication(${app.id})" 
+                        class="flex-1 gradient-btn btn-accept text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-check mr-2"></i>Terima Penawaran
+                </button>
+                <button onclick="rejectApplication(${app.id})" 
+                        class="flex-1 gradient-btn btn-reject text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-times mr-2"></i>Tolak Penawaran
+                </button>
+                <a href="/chatify/${app.mitra.id}" 
+                   class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-comments mr-2"></i>Chat Mitra
+                </a>
+            `;
+
+                case 'accepted':
+                    return `
+                <button onclick="createPayment(${app.id})" 
+                        class="flex-1 gradient-btn btn-deal text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-credit-card mr-2"></i>Bayar Sekarang
+                </button>
+                <a href="/chatify/${app.mitra.id}" 
+                   class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-comments mr-2"></i>Chat Mitra
+                </a>
+            `;
+
+                case 'in_progress':
+                    return `
+                <div class="flex-1 bg-green-100 border border-green-300 text-green-800 px-6 py-3 rounded-lg font-semibold text-center">
+                    <i class="fas fa-check-circle mr-2"></i>Pembayaran Berhasil - Sedang Dikerjakan
+                </div>
+                <a href="/chatify/${app.mitra.id}" 
+                   class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-comments mr-2"></i>Chat Mitra
+                </a>
+                <button onclick="markAsCompleted(${app.id})" 
+                        class="flex-1 gradient-btn btn-deal text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-flag-checkered mr-2"></i>Tandai Selesai
+                </button>
+            `;
+
+                case 'completed':
+                    return `
+                <button onclick="showRatingModal(${app.id})" 
+                        class="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-star mr-2"></i>Beri Rating
+                </button>
+                <a href="/chatify/${app.mitra.id}" 
+                   class="flex-1 text-center gradient-btn btn-secondary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-comments mr-2"></i>Riwayat Chat
+                </a>
+            `;
+
+                case 'rejected':
+                    return `
+                <a href="/chatify/${app.mitra.id}" 
+                   class="flex-1 text-center gradient-btn btn-secondary text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-comments mr-2"></i>Chat Mitra
+                </a>
+                <button onclick="deleteApplication(${app.id})" 
+                        class="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-trash mr-2"></i>Hapus
+                </button>
+            `;
+
+                default:
+                    return `
+                <button onclick="acceptApplication(${app.id})" 
+                        class="flex-1 gradient-btn btn-accept text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-check mr-2"></i>Terima Penawaran
+                </button>
+                <button onclick="rejectApplication(${app.id})" 
+                        class="flex-1 gradient-btn btn-reject text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-times mr-2"></i>Tolak Penawaran
+                </button>
+                <a href="/chatify/${app.mitra.id}" 
+                   class="flex-1 text-center gradient-btn btn-chat text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+                    <i class="fas fa-comments mr-2"></i>Chat Mitra
+                </a>
+            `;
+            }
+        }
+
+        // Add new payment function
+        async function createPayment(applicationId) {
+            if (!confirm('Apakah Anda yakin ingin melakukan pembayaran? Transaksi akan diproses melalui Xendit.')) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            const button = event.target.closest('button');
+            const originalContent = button.innerHTML;
+
+            try {
+                button.disabled = true;
+                button.innerHTML = `<div class="loading-spinner mr-2"></div>Membuat invoice...`;
+                showNotification('Membuat invoice pembayaran...', 'info');
+
+                const response = await fetch(`/customer/applications/${applicationId}/payment`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Invoice berhasil dibuat! Mengarahkan ke halaman pembayaran...', 'success');
+
+                    // Redirect to payment URL in the same window
+                    window.location.href = data.payment_url;
+                } else {
+                    showNotification(data.message || 'Gagal membuat pembayaran.', 'error');
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                }
+
+            } catch (error) {
+                console.error('Error creating payment:', error);
+                showNotification('Terjadi kesalahan saat membuat pembayaran.', 'error');
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
+        }
+
+        async function markAsCompleted(applicationId) {
+            if (!confirm('Apakah pekerjaan sudah selesai dan Anda puas dengan hasilnya?')) return;
+
+            await handleApplicationAction(applicationId, 'complete', 'Menandai sebagai selesai...');
+        }
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
 
         function closeApplicationsModal() {
             document.getElementById('applicationsModal').classList.add('hidden');
@@ -691,26 +867,42 @@
 
         async function deleteApplication(applicationId) {
             if (!confirm('Apakah Anda yakin ingin menghapus penawaran ini?')) return;
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
             await handleApplicationAction(applicationId, 'delete', 'Menghapus penawaran...');
         }
 
         // New functions for handling actions
         async function acceptApplication(applicationId) {
             if (!confirm('Apakah Anda yakin ingin menerima penawaran ini? Transaksi akan dibuat.')) return;
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
             await handleApplicationAction(applicationId, 'accept', 'Menerima penawaran...');
         }
 
         async function rejectApplication(applicationId) {
             if (!confirm('Apakah Anda yakin ingin menolak penawaran ini?')) return;
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
             await handleApplicationAction(applicationId, 'reject', 'Menolak penawaran...');
         }
 
         async function dealApplication(applicationId) {
             if (!confirm('Apakah Anda yakin ingin memulai pekerjaan ini? Pembayaran akan diproses.')) return;
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
             await handleApplicationAction(applicationId, 'deal', 'Memproses deal...');
         }
 
@@ -718,13 +910,21 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
             const button = event.target.closest('button');
             const originalContent = button.innerHTML;
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
             try {
                 // Show loading state
                 button.disabled = true;
                 button.innerHTML = `<div class="loading-spinner mr-2"></div>${loadingMessage}`;
                 showNotification(loadingMessage, 'info');
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
                 const response = await fetch(`/customer/applications/${applicationId}/${action}`, {
                     method: 'POST',
                     headers: {
@@ -740,7 +940,11 @@
                 if (data.success) {
                     showNotification(data.message, 'success');
                     closeApplicationsModal();
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
                     // Refresh the page after a short delay
                     setTimeout(() => {
                         window.location.reload();
@@ -822,7 +1026,11 @@
         setInterval(() => {
             const bellIcon = document.querySelector('.fa-bell');
             const notificationBadge = bellIcon?.nextElementSibling;
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
             if (bellIcon && notificationBadge) {
                 const currentCount = parseInt(notificationBadge.textContent);
 
@@ -839,6 +1047,26 @@
                 }
             }
         }, 10000);
+<<<<<<< HEAD
+=======
+
+        // Di bagian akhir script, update bagian DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for payment failure
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('payment_failed')) {
+                showNotification('Pembayaran dibatalkan atau gagal. Silakan coba lagi.', 'error');
+                // Remove the parameter from URL
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+
+            // Show session flash messages
+            @if (session('status'))
+                showNotification('{{ session('message') }}', '{{ session('status') }}');
+            @endif
+});
+>>>>>>> 858d9bc7d86d9615eeead35b103e5a9692175ec1
     </script>
 </body>
 
