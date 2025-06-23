@@ -6,6 +6,8 @@ use App\Models\Customer;
 use App\Models\JobPost;
 use App\Models\Mitra;
 use App\Models\JobApplication;
+use App\Models\Transaction;  // Import Transaction model untuk penghasilan
+use App\Models\Revenue;  // Import Revenue model untuk penghasilan mitra
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -24,7 +26,24 @@ class DashboardStatsWidget extends BaseWidget
     
     // Cache configuration
     protected int $cacheMinutes = 5;
-    
+    protected function getPlatformRevenueTrendData($startDate, $endDate): array
+    {
+        return $this->generateDataPoints($startDate, $endDate, function ($date) {
+            $totalPlatformRevenue = Revenue::whereDate('created_at', $date)
+                ->sum('platform_share'); // Sum platform share for each day
+            
+            return $totalPlatformRevenue;
+        });
+    }
+    protected function getMitraRevenueTrendData($startDate, $endDate): array
+    {
+        return $this->generateDataPoints($startDate, $endDate, function ($date) {
+            $totalMitraRevenue = Revenue::whereDate('created_at', $date)
+                ->sum('mitra_share'); // Sum mitra share for each day
+            
+            return $totalMitraRevenue;
+        });
+    }
     protected function getFormSchema(): array
     {
         return [
@@ -76,10 +95,47 @@ class DashboardStatsWidget extends BaseWidget
                 $this->createRevenueStat($currentPeriodData, $comparisonData, $chartData),
                 $this->createEngagementStat($currentPeriodData, $comparisonData, $chartData),
                 $this->createPerformanceStat($currentPeriodData, $comparisonData, $chartData),
+                // Add Platform Revenue Chart here
+                $this->createPlatformRevenueChart($currentPeriodData, $comparisonData, $chartData),
+                // Add Mitra Revenue Chart here
+                $this->createMitraRevenueChart($currentPeriodData, $comparisonData, $chartData),
             ];
         });
     }
+    // Add the method for platform revenue chart
+    // Update for Platform Revenue Chart
+    protected function createPlatformRevenueChart(array $current, array $comparison, array $charts): Stat
+    {
+        // Sum up the total revenue from platform (admin share)
+        $totalPlatformRevenue = Revenue::sum('platform_share');  // Platform share stored in the revenue table
+        $change = !empty($comparison) ? $this->calculatePercentageChange($totalPlatformRevenue, $comparison['total_platform_revenue']) : null;
+        
+        return Stat::make('💰 Platform Revenue', 'Rp ' . number_format($totalPlatformRevenue / 1000, 0) . 'K')
+            ->description($this->getChangeDescription('platform revenue', $change))
+            ->descriptionIcon($this->getChangeIcon($change))
+            ->chart($charts['platform_revenue']) // Use the chart data here
+            ->color($this->getChangeColor($change))
+            ->extraAttributes([
+                'class' => 'text-center',
+            ]);
+    }
 
+    // Update for Mitra Revenue Chart
+    protected function createMitraRevenueChart(array $current, array $comparison, array $charts): Stat
+    {
+        // Sum up the total revenue for mitra share
+        $totalMitraRevenue = Revenue::sum('mitra_share');  // Mitra share stored in the revenue table
+        $change = !empty($comparison) ? $this->calculatePercentageChange($totalMitraRevenue, $comparison['total_mitra_revenue']) : null;
+        
+        return Stat::make('🤝 Mitra Revenue', 'Rp ' . number_format($totalMitraRevenue / 1000, 0) . 'K')
+            ->description($this->getChangeDescription('mitra revenue', $change))
+            ->descriptionIcon($this->getChangeIcon($change))
+            ->chart($charts['mitra_revenue']) // Use the chart data here
+            ->color($this->getChangeColor($change))
+            ->extraAttributes([
+                'class' => 'text-center',
+            ]);
+    }
     protected function getCurrentPeriodData(): array
     {
         $startDate = now()->subDays($this->filterPeriod);
@@ -127,6 +183,14 @@ class DashboardStatsWidget extends BaseWidget
             'jobs_completed' => JobPost::where('status', 'completed')
                 ->whereBetween('updated_at', [$comparisonStart, $comparisonEnd])
                 ->count(),
+            'total_platform_revenue' => Revenue::whereHas('transaction', function ($query) use ($comparisonStart, $comparisonEnd) {
+                $query->where('payment_date', '>=', $comparisonStart)
+                      ->where('payment_date', '<=', $comparisonEnd);
+            })->sum('platform_share'),
+            'total_mitra_revenue' => Revenue::whereHas('transaction', function ($query) use ($comparisonStart, $comparisonEnd) {
+                $query->where('payment_date', '>=', $comparisonStart)
+                      ->where('payment_date', '<=', $comparisonEnd);
+            })->sum('mitra_share'),
         ];
     }
 
@@ -143,7 +207,6 @@ class DashboardStatsWidget extends BaseWidget
                 'class' => 'text-center',
             ]);
     }
-
     protected function createCustomersStat(array $current, array $comparison, array $charts): Stat
     {
         $change = !empty($comparison) ? $this->calculatePercentageChange($current['new_customers'], $comparison['new_customers']) : null;
@@ -257,8 +320,8 @@ class DashboardStatsWidget extends BaseWidget
             ]);
     }
 
-    protected function getAdvancedChartData(): array
-    {
+   protected function getAdvancedChartData(): array
+{
         $startDate = now()->subDays($this->filterPeriod);
         $endDate = now();
         
@@ -271,8 +334,14 @@ class DashboardStatsWidget extends BaseWidget
             'revenue' => $this->getRevenueTrendData($startDate, $endDate),
             'engagement' => $this->getEngagementTrendData($startDate, $endDate),
             'performance' => $this->getPerformanceTrendData($startDate, $endDate),
+            // Add platform revenue chart data
+            'platform_revenue' => $this->getPlatformRevenueTrendData($startDate, $endDate),
+            
+            // Add mitra revenue chart data
+            'mitra_revenue' => $this->getMitraRevenueTrendData($startDate, $endDate),
         ];
     }
+    
 
     protected function getModelTrendData($modelClass, $startDate, $endDate): array
     {

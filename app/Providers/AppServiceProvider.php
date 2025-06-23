@@ -3,23 +3,20 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Setting;
+use App\Observers\SettingObserver;
 use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function boot()
     {
-        //
+        // Daftarkan observer untuk model Setting
+        Setting::observe(SettingObserver::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+    public function register()
     {
-        Carbon::setLocale('id');
+        //
     }
 }

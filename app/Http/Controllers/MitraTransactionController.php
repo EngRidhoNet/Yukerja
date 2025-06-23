@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Notification;
-use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\JobPost;
+use App\Models\JobApplication;
+use App\Models\Transaction;
+use App\Models\Notification;
+use App\Models\Revenue;  // Import Revenue model
+use Illuminate\Support\Facades\DB;
 
 class MitraTransactionController extends Controller
 {
@@ -67,17 +70,23 @@ class MitraTransactionController extends Controller
     public function show($id)
     {
         try {
+            // Fetch the transaction and the related revenue record for mitra_share
             $transaction = Transaction::with(['jobPost', 'customer'])
                 ->where('mitra_id', auth()->user()->mitra->id)
                 ->findOrFail($id);
-                
+
+            // Fetch revenue record for mitra_share
+            $revenue = Revenue::where('transaction_id', $transaction->id)->first();
+            $mitra_share = $revenue ? number_format($revenue->mitra_share, 0, ',', '.') : 0;
+
+            // Return the response with mitra_share from revenues
             return response()->json([
                 'invoice_number' => $transaction->invoice_number,
                 'job_title' => $transaction->jobPost->title,
                 'customer_name' => $transaction->customer->name,
                 'amount' => number_format($transaction->amount, 0, ',', '.'),
-                'admin_fee' => number_format($transaction->admin_fee, 0, ',', '.'),
-                'mitra_earning' => number_format($transaction->mitra_earning, 0, ',', '.'),
+                'commission_rate' => number_format($transaction->commission_rate, 0, ',', '.'),  // Now using commission_rate for admin_fee
+                'mitra_share' => $mitra_share,  // Menyimpan mitra_share
                 'payment_status' => $transaction->payment_status,
                 'payment_method' => $transaction->payment_method,
                 'payment_date' => \Carbon\Carbon::parse($transaction->payment_date)->translatedFormat('l, d M Y • H:i'),

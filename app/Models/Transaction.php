@@ -23,6 +23,7 @@ class Transaction extends Model
         'transaction_reference',
     ];
 
+    // Pastikan hanya satu deklarasi $casts dan tidak ada duplikasi
     protected $casts = [
         'payment_date' => 'datetime',
         'amount' => 'decimal:2',
@@ -30,16 +31,19 @@ class Transaction extends Model
         'mitra_earning' => 'decimal:2',
     ];
 
+    // Relasi ke tabel JobPost
     public function jobPost()
     {
         return $this->belongsTo(JobPost::class);
     }
 
+    // Relasi ke tabel Customer
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
 
+    // Relasi ke tabel Mitra
     public function mitra()
     {
         return $this->belongsTo(Mitra::class);
