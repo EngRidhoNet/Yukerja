@@ -18,16 +18,18 @@ class Transaction extends Model
         'mitra_earning',
         'payment_status',
         'payment_method',
-        'invoice_number',
         'payment_date',
-        'transaction_reference',
+        'invoice_number',
+        'xendit_invoice_id',
+        'xendit_external_id',
+        'payment_url',
     ];
 
     protected $casts = [
-        'payment_date' => 'datetime',
         'amount' => 'decimal:2',
         'admin_fee' => 'decimal:2',
         'mitra_earning' => 'decimal:2',
+        'payment_date' => 'datetime',
     ];
 
     public function jobPost()
@@ -42,6 +44,6 @@ class Transaction extends Model
 
     public function mitra()
     {
-        return $this->belongsTo(Mitra::class);
+        return $this->belongsTo(User::class, 'mitra_id');
     }
 }
